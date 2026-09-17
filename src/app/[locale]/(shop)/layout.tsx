@@ -6,6 +6,7 @@ import { usePathname } from "next/navigation";
 import { useLocale, useTranslations } from "next-intl";
 import { LocaleSwitcher } from "@/components/shop/locale-switcher";
 import { CartProvider, useCart } from "@/context/CartContext";
+import { InstagramIcon, TikTokIcon } from "@/components/shop/social-icons";
 import { Menu, X, ShoppingBag } from "lucide-react";
 
 function CartLink({ onClick }: { onClick?: () => void }) {
@@ -23,7 +24,7 @@ function CartLink({ onClick }: { onClick?: () => void }) {
       <ShoppingBag className="w-5 h-5" />
       {itemCount > 0 && (
         <span className="absolute -top-0.5 -end-0.5 min-w-4 h-4 px-1 rounded-full bg-zinc-900 text-white text-[10px] font-bold flex items-center justify-center">
-          {itemCount}
+          <bdi dir="ltr">{itemCount}</bdi>
         </span>
       )}
     </Link>
@@ -191,13 +192,49 @@ export default function ShopLayout({ children }: { children: React.ReactNode }) 
       <main className="flex-1 flex flex-col">{children}</main>
 
       {/* Footer */}
-      <footer className="border-t border-zinc-100 py-10 px-6">
-        <div className="max-w-7xl mx-auto flex flex-col items-center gap-4">
-          <img
-            src="/assets/logo/tqp-logo-.png"
-            alt="The Queen of Perfumes"
-            className="h-10 w-auto opacity-60"
-          />
+      <footer className="border-t border-zinc-100 py-16 px-6">
+        <div className="max-w-4xl mx-auto flex flex-col items-center gap-8">
+          <Link href={`/${locale}`} className="inline-flex items-center gap-2">
+            <img
+              src="/assets/logo/tqp-logo-.png"
+              alt="The Queen of Perfumes"
+              className="h-11 w-auto"
+            />
+          </Link>
+
+          <nav className="flex flex-wrap items-center justify-center gap-x-8 gap-y-2 text-sm font-medium text-zinc-500">
+            <Link href={`/${locale}`} className="hover:text-zinc-900 transition-colors">
+              {tNav("home")}
+            </Link>
+            <Link href={`/${locale}/boxes`} className="hover:text-zinc-900 transition-colors">
+              {tNav("packs")}
+            </Link>
+            <Link href={`/${locale}/creez-votre-box`} className="hover:text-zinc-900 transition-colors">
+              {tNav("buildYourPack")}
+            </Link>
+            <Link href={`/${locale}/panier`} className="hover:text-zinc-900 transition-colors">
+              {tNav("cart")}
+            </Link>
+          </nav>
+
+          <div className="flex items-center gap-3">
+            <a
+              href="#"
+              aria-label="Instagram"
+              className="grid size-10 place-items-center rounded-full border border-zinc-200 text-zinc-500 transition-colors hover:bg-zinc-900 hover:text-white hover:border-zinc-900"
+            >
+              <InstagramIcon className="w-4 h-4" />
+            </a>
+            <a
+              href="#"
+              aria-label="TikTok"
+              className="grid size-10 place-items-center rounded-full border border-zinc-200 text-zinc-500 transition-colors hover:bg-zinc-900 hover:text-white hover:border-zinc-900"
+            >
+              <TikTokIcon className="w-4 h-4" />
+            </a>
+          </div>
+
+          <div className="h-px w-16 bg-zinc-100" />
           <p className="text-xs text-zinc-400 tracking-wide">
             {tFooter("text", { year: new Date().getFullYear() })}
           </p>

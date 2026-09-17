@@ -1,30 +1,47 @@
 import { notFound } from "next/navigation";
 import { getTranslations } from "next-intl/server";
-import { PLACEHOLDER_PACKS, PLACEHOLDER_PERFUMES } from "@/lib/placeholder-data";
+import { createClient } from "@/lib/supabase/server";
+import { mapPackRow, mapPerfumeRow } from "@/lib/supabase/mappers";
 import { Badge } from "@/components/ui/badge";
 import { Price } from "@/components/shop/price";
-import { PackAddToCart } from "@/components/shop/pack-add-to-cart";
+import { BoxAddToCart } from "@/components/shop/box-add-to-cart";
 import Link from "next/link";
 
-export default async function PackDetailPage({
+export default async function BoxDetailPage({
   params,
 }: {
   params: Promise<{ locale: string; id: string }>;
 }) {
   const { locale, id } = await params;
-  const pack = PLACEHOLDER_PACKS.find((p) => p.id === id);
+  const supabase = await createClient();
 
-  if (!pack) {
+  const { data: packRow } = await supabase
+    .from("packs")
+    .select("*, pack_perfumes(perfume_id)")
+    .eq("id", id)
+    .eq("is_active", true)
+    .maybeSingle();
+
+  if (!packRow) {
     notFound();
   }
+
+  const perfumeIds: string[] = (packRow.pack_perfumes ?? []).map(
+    (pp: { perfume_id: string }) => pp.perfume_id
+  );
+  const pack = mapPackRow(packRow, perfumeIds);
 
   const tPack = await getTranslations("Pack");
   const tProduct = await getTranslations("Product");
   const loc = locale as "fr" | "ar";
 
-  // Resolve perfumes in this pack
-  const packPerfumes = pack.perfumeIds
-    .map((perfumeId) => PLACEHOLDER_PERFUMES.find((p) => p.id === perfumeId))
+  // Resolve perfumes in this pack, preserving the pack's own ordering
+  const { data: perfumeRows } = perfumeIds.length
+    ? await supabase.from("perfumes").select("*").in("id", perfumeIds)
+    : { data: [] };
+  const perfumesById = new Map((perfumeRows ?? []).map((row) => [row.id, mapPerfumeRow(row)]));
+  const packPerfumes = perfumeIds
+    .map((perfumeId) => perfumesById.get(perfumeId))
     .filter((p): p is NonNullable<typeof p> => p !== undefined);
 
   return (
@@ -82,7 +99,7 @@ export default async function PackDetailPage({
             {pack.description[loc]}
           </p>
 
-          <PackAddToCart pack={pack} />
+          <BoxAddToCart pack={pack} perfumes={packPerfumes} />
 
           <div className="text-sm text-zinc-500 space-y-2 pt-6 border-t border-zinc-100">
             <p>{tProduct("freeDelivery")}</p>

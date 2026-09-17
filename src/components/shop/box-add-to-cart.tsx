@@ -5,10 +5,11 @@ import { useRouter } from "next/navigation";
 import { useLocale, useTranslations } from "next-intl";
 import { useCart } from "@/context/CartContext";
 import { Button } from "@/components/ui/button";
-import { Pack } from "@/types";
+import { Pack, Perfume } from "@/types";
+import { toCartPerfumeSummary } from "@/lib/cart-line";
 import { Minus, Plus } from "lucide-react";
 
-export function PackAddToCart({ pack }: { pack: Pack }) {
+export function BoxAddToCart({ pack, perfumes }: { pack: Pack; perfumes: Perfume[] }) {
   const [quantity, setQuantity] = useState(1);
   const { addItem } = useCart();
   const router = useRouter();
@@ -24,6 +25,7 @@ export function PackAddToCart({ pack }: { pack: Pack }) {
       price: pack.price,
       quantity,
       perfumeIds: pack.perfumeIds,
+      perfumes: perfumes.map(toCartPerfumeSummary),
     });
     router.push(`/${locale}/panier`);
   }
@@ -39,7 +41,7 @@ export function PackAddToCart({ pack }: { pack: Pack }) {
         >
           <Minus size={14} />
         </button>
-        <span className="flex-1 text-center font-medium">{quantity}</span>
+        <bdi dir="ltr" className="flex-1 text-center font-medium">{quantity}</bdi>
         <button
           type="button"
           onClick={() => setQuantity((q) => q + 1)}

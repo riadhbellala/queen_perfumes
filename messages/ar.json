@@ -6,7 +6,7 @@
     "about": "من نحن",
     "contact": "اتصل بنا",
     "composePack": "كوّن مجموعتك",
-    "buildYourPack": "اصنع مجموعتك",
+    "buildYourPack": "شكلي مجموعتك",
     "cart": "السلة"
   },
   "Hero": {
@@ -17,7 +17,7 @@
   "Home": {
     "featuredPerfumesTitle": "عطورنا الأيقونية",
     "featuredPerfumesSubtitle": "إبداعاتنا الأكثر طلباً وإعجاباً",
-    "seeAll": "\u2190 عرض الكل",
+    "seeAll": "← عرض الكل",
     "seeAllMobile": "عرض المجموعة كاملة",
     "packsTitle": "مجموعاتنا",
     "packsSubtitle": "فن الإهداء وتدليل الذات. تشكيلات مثالية لاكتشاف عائلاتنا العطرية المتنوعة.",
@@ -45,7 +45,7 @@
     "noResults": "لم يتم العثور على أي عطر",
     "noResultsDesc": "لا توجد عطور تطابق بحثك. يرجى تعديل خيارات التصفية.",
     "resetFilters": "إعادة ضبط الفلاتر",
-    "backToPerfumes": "\u2192 العودة إلى العطور"
+    "backToPerfumes": "→ العودة إلى العطور"
   },
   "Packs": {
     "title": "جميع مجموعاتنا",
@@ -63,8 +63,8 @@
     "filters": "الفلاتر"
   },
   "Pack": {
-    "backToHome": "\u2192 العودة للرئيسية",
-    "backToPacks": "\u2192 العودة إلى المجموعات",
+    "backToHome": "→ العودة للرئيسية",
+    "backToPacks": "→ العودة إلى المجموعات",
     "contains": "تحتوي هذه المجموعة على"
   },
   "Product": {
@@ -72,18 +72,18 @@
     "outOfStock": "غير متوفر",
     "outOfStockBadge": "نفد",
     "addToCart": "أضف إلى السلة",
-    "composeCTA": "كوّن مجموعة بهذا العطر",
+    "viewPerfume": "عرض العطر",
     "freeDelivery": "توصيل مجاني للطلبات فوق 15000 دج.",
     "freeReturns": "إرجاع مجاني خلال 30 يوماً.",
     "youMightAlsoLike": "قد يعجبك أيضاً",
     "perfumeCount": "{count} {count, plural, =0 {عطر} =1 {عطر} =2 {عطران} other {عطور}}"
   },
   "Footer": {
-    "text": "\u00a9 {year} ملكة العطور. جميع الحقوق محفوظة."
+    "text": "© {year} ملكة العطور. جميع الحقوق محفوظة."
   },
   "PackBuilder": {
-    "title": "اصنع مجموعتك",
-    "subtitle": "اختر الحجم، حدد عطورك، وكوّن مجموعتك الفريدة.",
+    "title": "شكلي مجموعتك",
+    "subtitle": "اختاري الحجم، حددي عطورك، وكوّني مجموعتك الفريدة.",
     "step1Title": "اختر مجموعتك",
     "step1Desc": "أي حجم يناسبك؟",
     "perfumesLabel": "{count} عطور",
@@ -114,8 +114,12 @@
     "wilaya": "الولاية",
     "wilayaPlaceholder": "اختاري ولايتك",
     "commune": "البلدية",
-    "communePlaceholder": "بلديتك",
+    "communePlaceholder": "اختاري بلديتك",
+    "communePlaceholderDisabled": "اختاري الولاية أولاً",
     "communeRequired": "يرجى إدخال بلديتك.",
+    "deliveryType": "طريقة التوصيل",
+    "deliveryHome": "توصيل للمنزل",
+    "deliveryOffice": "استلام من المكتب",
     "address": "العنوان الكامل",
     "addressPlaceholder": "الرقم، الشارع، البلدية…",
     "orderNote": "ملاحظة الطلب (اختياري)",

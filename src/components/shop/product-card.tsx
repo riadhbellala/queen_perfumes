@@ -73,7 +73,7 @@ export function ProductCard({ product, type, meta, badgeLabel }: ProductCardProp
         {product.price !== undefined && (
           <div className="mt-1 flex items-center justify-between">
             <Price amount={product.price} className="text-lg font-semibold text-zinc-900" />
-            <span className="text-sm font-medium text-zinc-400 group-hover:text-zinc-900 transition-colors uppercase tracking-wider">{isPerfume ? t('composeCTA') : t('addToCart')}</span>
+            <span className="text-sm font-medium text-zinc-400 group-hover:text-zinc-900 transition-colors uppercase tracking-wider">{isPerfume ? t('viewPerfume') : t('addToCart')}</span>
           </div>
         )}
       </div>

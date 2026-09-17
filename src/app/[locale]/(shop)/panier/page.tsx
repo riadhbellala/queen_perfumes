@@ -79,58 +79,62 @@ export default function PanierPage() {
             return (
               <div
                 key={item.cartLineId}
-                className="flex items-center gap-4 bg-white rounded-2xl border border-zinc-200 p-4"
+                className="flex flex-wrap items-center gap-4 bg-white rounded-2xl border border-zinc-200 p-4"
               >
-                <div className="size-16 shrink-0 overflow-hidden rounded-xl bg-zinc-50">
-                  {lineImage(item) ? (
-                    // eslint-disable-next-line @next/next/no-img-element
-                    <img src={lineImage(item)} alt={title} className="h-full w-full object-cover" />
-                  ) : (
-                    <div className="flex h-full w-full items-center justify-center text-zinc-300">
-                      <ShoppingBag size={22} />
-                    </div>
-                  )}
+                <div className="flex min-w-[180px] flex-1 items-center gap-4">
+                  <div className="size-16 shrink-0 overflow-hidden rounded-xl bg-zinc-50">
+                    {lineImage(item) ? (
+                      // eslint-disable-next-line @next/next/no-img-element
+                      <img src={lineImage(item)} alt={title} className="h-full w-full object-cover" />
+                    ) : (
+                      <div className="flex h-full w-full items-center justify-center text-zinc-300">
+                        <ShoppingBag size={22} />
+                      </div>
+                    )}
+                  </div>
+
+                  <div className="min-w-0 flex-1">
+                    <p className="font-medium text-zinc-900 truncate">{title}</p>
+                    <Price amount={unit} className="text-sm text-zinc-500" />
+                  </div>
                 </div>
 
-                <div className="min-w-0 flex-1">
-                  <p className="font-medium text-zinc-900 truncate">{title}</p>
-                  <Price amount={unit} className="text-sm text-zinc-500" />
-                </div>
+                <div className="ms-auto flex shrink-0 items-center gap-3 sm:gap-4">
+                  <div className="flex items-center gap-2 border border-zinc-200 rounded-full px-1 py-1">
+                    <button
+                      type="button"
+                      onClick={() => updateQuantity(item.cartLineId, item.quantity - 1)}
+                      disabled={item.quantity <= 1}
+                      className="size-7 flex items-center justify-center rounded-full text-zinc-500 hover:bg-zinc-100 disabled:opacity-30 transition-colors"
+                      aria-label="-"
+                    >
+                      <Minus size={14} />
+                    </button>
+                    <bdi dir="ltr" className="inline-block w-6 text-center text-sm font-medium">{item.quantity}</bdi>
+                    <button
+                      type="button"
+                      onClick={() => updateQuantity(item.cartLineId, item.quantity + 1)}
+                      className="size-7 flex items-center justify-center rounded-full text-zinc-500 hover:bg-zinc-100 transition-colors"
+                      aria-label="+"
+                    >
+                      <Plus size={14} />
+                    </button>
+                  </div>
 
-                <div className="flex items-center gap-2 border border-zinc-200 rounded-full px-1 py-1">
+                  <Price
+                    amount={unit * item.quantity}
+                    className="w-16 sm:w-24 shrink-0 text-end font-semibold text-zinc-900"
+                  />
+
                   <button
                     type="button"
-                    onClick={() => updateQuantity(item.cartLineId, item.quantity - 1)}
-                    disabled={item.quantity <= 1}
-                    className="size-7 flex items-center justify-center rounded-full text-zinc-500 hover:bg-zinc-100 disabled:opacity-30 transition-colors"
-                    aria-label="-"
+                    onClick={() => removeItem(item.cartLineId)}
+                    className="shrink-0 p-2 text-zinc-400 hover:text-red-600 transition-colors"
+                    aria-label={tPanier("remove")}
                   >
-                    <Minus size={14} />
-                  </button>
-                  <span className="w-6 text-center text-sm font-medium">{item.quantity}</span>
-                  <button
-                    type="button"
-                    onClick={() => updateQuantity(item.cartLineId, item.quantity + 1)}
-                    className="size-7 flex items-center justify-center rounded-full text-zinc-500 hover:bg-zinc-100 transition-colors"
-                    aria-label="+"
-                  >
-                    <Plus size={14} />
+                    <Trash2 size={18} />
                   </button>
                 </div>
-
-                <Price
-                  amount={unit * item.quantity}
-                  className="w-24 shrink-0 text-end font-semibold text-zinc-900"
-                />
-
-                <button
-                  type="button"
-                  onClick={() => removeItem(item.cartLineId)}
-                  className="shrink-0 p-2 text-zinc-400 hover:text-red-600 transition-colors"
-                  aria-label={tPanier("remove")}
-                >
-                  <Trash2 size={18} />
-                </button>
               </div>
             );
           })}

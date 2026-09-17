@@ -3,9 +3,9 @@
 import React, { useState, useMemo } from "react";
 import { useRouter } from "next/navigation";
 import { useLocale, useTranslations } from "next-intl";
-import { PLACEHOLDER_PERFUMES, PACK_SIZE_PRICING } from "@/lib/placeholder-data";
-import { Perfume } from "@/types";
+import { Perfume, PackSizePricing } from "@/types";
 import { useCart } from "@/context/CartContext";
+import { toCartPerfumeSummary } from "@/lib/cart-line";
 import { Price } from "@/components/shop/price";
 import { Button } from "@/components/ui/button";
 import {
@@ -17,7 +17,13 @@ import {
 } from "@/components/ui/dialog";
 import { CheckCircle2, ShoppingBag, Info, PackageOpen, ChevronRight, X } from "lucide-react";
 
-export function HomepagePackBuilder() {
+export function HomepageBoxBuilder({
+  perfumes,
+  pricing,
+}: {
+  perfumes: Perfume[];
+  pricing: PackSizePricing[];
+}) {
   const locale = useLocale() as "fr" | "ar";
   const router = useRouter();
   const t = useTranslations("PackBuilder");
@@ -25,14 +31,14 @@ export function HomepagePackBuilder() {
 
   const [selectedPerfumeIds, setSelectedPerfumeIds] = useState<string[]>([]);
   const selectedCount = selectedPerfumeIds.length;
-  
+
   // Calculate price based on selected count
   const currentPricing = useMemo(() => {
     if (selectedCount < 2) return null;
     // Cap size at 6 (max pack size)
     const sizeToFind = Math.min(selectedCount, 6);
-    return PACK_SIZE_PRICING.find(p => p.size === sizeToFind) || null;
-  }, [selectedCount]);
+    return pricing.find(p => p.size === sizeToFind) || null;
+  }, [selectedCount, pricing]);
 
   function togglePerfume(id: string) {
     setSelectedPerfumeIds((prev) => {
@@ -49,6 +55,10 @@ export function HomepagePackBuilder() {
       type: "custom_pack",
       size: currentPricing.size,
       selectedPerfumeIds,
+      perfumes: selectedPerfumeIds
+        .map((id) => perfumes.find((p) => p.id === id))
+        .filter((p): p is Perfume => Boolean(p))
+        .map(toCartPerfumeSummary),
       price: currentPricing.price,
       quantity: 1,
     });
@@ -65,11 +75,13 @@ export function HomepagePackBuilder() {
             <p className="text-sm font-semibold text-zinc-900">
               {locale === "fr" ? "Votre sélection" : "اختيارك"}
             </p>
-            <p className="text-xs font-medium text-zinc-400">{selectedCount}/6</p>
+            <p className="text-xs font-medium text-zinc-400">
+              <bdi dir="ltr">{selectedCount}/6</bdi>
+            </p>
           </div>
           <div className="flex gap-3 overflow-x-auto pb-1">
             {selectedPerfumeIds.map((id) => {
-              const perfume = PLACEHOLDER_PERFUMES.find((p) => p.id === id);
+              const perfume = perfumes.find((p) => p.id === id);
               if (!perfume) return null;
               return (
                 <div key={id} className="relative shrink-0 w-16">
@@ -102,7 +114,7 @@ export function HomepagePackBuilder() {
       )}
 
       <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6 lg:gap-8">
-        {PLACEHOLDER_PERFUMES.map((perfume) => {
+        {perfumes.map((perfume) => {
           const isUnavailable = !perfume.inStock;
           const isSelected = selectedPerfumeIds.includes(perfume.id);
           const isMaxReached = selectedCount >= 6 && !isSelected;

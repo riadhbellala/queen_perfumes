@@ -1,10 +1,12 @@
 import React from "react";
 import Link from "next/link";
 import { getTranslations } from "next-intl/server";
-import { PLACEHOLDER_PACKS, PLACEHOLDER_PERFUMES, PACK_SIZE_PRICING } from "@/lib/placeholder-data";
+import { createClient } from "@/lib/supabase/server";
+import { mapPackRow, mapPerfumeRow, mapPackSizePricingRow } from "@/lib/supabase/mappers";
 import { ProductCard } from "@/components/shop/product-card";
-import { HomepagePackBuilder } from "@/components/shop/homepage-pack-builder";
+import { HomepageBoxBuilder } from "@/components/shop/homepage-box-builder";
 import { Price } from "@/components/shop/price";
+import { InstagramIcon, TikTokIcon } from "@/components/shop/social-icons";
 import { Button } from "@/components/ui/button";
 
 export default async function ShopHomepage({
@@ -16,27 +18,26 @@ export default async function ShopHomepage({
   const tHome = await getTranslations("Home");
   const tHero = await getTranslations("Hero");
   const tPackBuilder = await getTranslations("PackBuilder");
-  const recommendedPacks = PLACEHOLDER_PACKS.slice(0, 4);
-  const recommendedPerfumes = PLACEHOLDER_PERFUMES.slice(0, 8); // Showing more perfumes
 
-  const startingPrice = PACK_SIZE_PRICING[0].price;
+  const supabase = await createClient();
+  const [{ data: packRows }, { data: perfumeRows }, { data: pricingRows }] = await Promise.all([
+    supabase
+      .from("packs")
+      .select("*")
+      .eq("is_active", true)
+      .order("is_featured", { ascending: false })
+      .order("created_at", { ascending: true }),
+    supabase.from("perfumes").select("*").eq("is_active", true).order("created_at", { ascending: true }),
+    supabase.from("pack_size_pricing").select("size, price").order("size", { ascending: true }),
+  ]);
 
-  const InstagramIcon = ({ className }: { className?: string }) => (
-    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}>
-      <rect width="20" height="20" x="2" y="2" rx="5" ry="5" />
-      <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z" />
-      <line x1="17.5" x2="17.51" y1="6.5" y2="6.5" />
-    </svg>
-  );
+  const allPacks = (packRows ?? []).map((row) => mapPackRow(row));
+  const allPerfumes = (perfumeRows ?? []).map(mapPerfumeRow);
+  const packSizePricing = (pricingRows ?? []).map(mapPackSizePricingRow);
 
-  const TikTokIcon = ({ className }: { className?: string }) => (
-    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512" fill="currentColor" className={className}>
-      <path d="M448,209.91a210.06,210.06,0,0,1-122.77-39.25V349.38A162.55,162.55,0,1,1,185,188.31V278.2a74.62,74.62,0,1,0,52.23,71.18V0l88,0a121.18,121.18,0,0,0,1.86,22.17h0A122.18,122.18,0,0,0,381,102.39a121.43,121.43,0,0,0,67,20.14Z" />
-    </svg>
-  );
+  const recommendedPacks = allPacks.slice(0, 4);
 
-
-
+  const startingPrice = packSizePricing[0]?.price ?? 0;
 
   return (
     <div className="flex-1 w-full flex flex-col">
@@ -118,7 +119,7 @@ export default async function ShopHomepage({
           <h2 className="text-4xl md:text-5xl font-heading text-zinc-900 mb-4">{tHome("recommendedPacksTitle")}</h2>
           <p className="text-zinc-500 max-w-xl mx-auto">{tHome("packsSubtitle")}</p>
         </div>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-12">
+        <div className="stagger-fade grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-5 lg:gap-6">
           {recommendedPacks.map(pack => (
             <ProductCard key={pack.id} product={pack} type="pack" />
           ))}
@@ -132,14 +133,15 @@ export default async function ShopHomepage({
         </div>
       </section>
 
-      {/* Pack Builder Section */}
+      {/* Pack Builder Section — same background as the section above, no
+          divider, so the page reads as one continuous surface */}
       <section id="pack-builder" className="py-24 px-6 lg:px-8 max-w-7xl mx-auto w-full mb-10">
         <div className="text-center mb-16">
           <h2 className="text-4xl md:text-5xl font-heading text-zinc-900 mb-4">{tPackBuilder("title")}</h2>
           <p className="text-zinc-500 max-w-xl mx-auto">{tPackBuilder("subtitle")}</p>
         </div>
-        
-        <HomepagePackBuilder />
+
+        <HomepageBoxBuilder perfumes={allPerfumes} pricing={packSizePricing} />
       </section>
     </div>
   );

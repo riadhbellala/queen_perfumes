@@ -8,7 +8,8 @@ import { useLocale, useTranslations } from "next-intl";
 import { useCart } from "@/context/CartContext";
 import { Price } from "@/components/shop/price";
 import { createDeliveryFormSchema, DeliveryFormValues } from "@/lib/validations/order";
-import { WILAYAS, getDeliveryFee } from "@/lib/wilayas";
+import { WILAYAS, getDeliveryFee, type DeliveryType } from "@/lib/wilayas";
+import { COMMUNES_BY_WILAYA } from "@/lib/communes";
 import { Field, FieldError, FieldGroup, FieldLabel } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -59,17 +60,34 @@ export function DeliveryForm() {
     formState: { errors, isSubmitting },
   } = useForm<DeliveryFormValues>({
     resolver: zodResolver(schema),
-    defaultValues: { fullName: "", phone: "", wilaya: "", commune: "", address: "", note: "" },
+    defaultValues: {
+      fullName: "",
+      phone: "",
+      wilaya: "",
+      commune: "",
+      deliveryType: "home",
+      address: "",
+      note: "",
+    },
   });
 
   const wilaya = watch("wilaya");
-  const deliveryFee = wilaya ? getDeliveryFee(Number(wilaya)) : null;
+  const commune = watch("commune");
+  const deliveryType = watch("deliveryType");
+  const communeOptions = wilaya ? COMMUNES_BY_WILAYA[Number(wilaya)] ?? [] : [];
+  const deliveryFee = wilaya ? getDeliveryFee(Number(wilaya), deliveryType) : null;
   const total = subtotal + (deliveryFee ?? 0);
+
+  function handleWilayaChange(value: string) {
+    setValue("wilaya", value, { shouldValidate: true });
+    // A new wilaya invalidates whatever commune was picked for the previous one.
+    setValue("commune", "", { shouldValidate: false });
+  }
 
   function onSubmit(values: DeliveryFormValues) {
     const orderRef = generateOrderRef();
     const itemCount = items.reduce((sum, i) => sum + i.quantity, 0);
-    const fee = getDeliveryFee(Number(values.wilaya));
+    const fee = getDeliveryFee(Number(values.wilaya), values.deliveryType);
 
     try {
       sessionStorage.setItem(
@@ -122,10 +140,7 @@ export function DeliveryForm() {
 
         <Field data-invalid={!!errors.wilaya}>
           <FieldLabel htmlFor="wilaya">{t("wilaya")} *</FieldLabel>
-          <Select
-            value={wilaya}
-            onValueChange={(value) => setValue("wilaya", value as string, { shouldValidate: true })}
-          >
+          <Select value={wilaya} onValueChange={(value) => handleWilayaChange(value as string)}>
             <SelectTrigger id="wilaya" className={`${inputClassName} w-full`}>
               <SelectValue placeholder={t("wilayaPlaceholder")} />
             </SelectTrigger>
@@ -142,14 +157,45 @@ export function DeliveryForm() {
 
         <Field data-invalid={!!errors.commune}>
           <FieldLabel htmlFor="commune">{t("commune")} *</FieldLabel>
-          <Input
-            id="commune"
-            placeholder={t("communePlaceholder")}
-            aria-invalid={!!errors.commune}
-            className={inputClassName}
-            {...register("commune")}
-          />
+          <Select
+            value={commune}
+            disabled={!wilaya}
+            onValueChange={(value) => setValue("commune", value as string, { shouldValidate: true })}
+          >
+            <SelectTrigger id="commune" className={`${inputClassName} w-full`}>
+              <SelectValue
+                placeholder={wilaya ? t("communePlaceholder") : t("communePlaceholderDisabled")}
+              />
+            </SelectTrigger>
+            <SelectContent>
+              {communeOptions.map((c) => (
+                <SelectItem key={c.fr} value={c.fr}>
+                  {c[locale]}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
           <FieldError errors={[errors.commune]} />
+        </Field>
+
+        <Field>
+          <FieldLabel>{t("deliveryType")} *</FieldLabel>
+          <div className="grid grid-cols-2 gap-3">
+            {(["home", "office"] as DeliveryType[]).map((option) => (
+              <button
+                key={option}
+                type="button"
+                onClick={() => setValue("deliveryType", option, { shouldValidate: true })}
+                className={`h-12 rounded-xl border text-sm font-medium transition-colors ${
+                  deliveryType === option
+                    ? "border-zinc-900 bg-zinc-900 text-white"
+                    : "border-zinc-200 bg-zinc-50 text-zinc-600 hover:border-zinc-300"
+                }`}
+              >
+                {option === "home" ? t("deliveryHome") : t("deliveryOffice")}
+              </button>
+            ))}
+          </div>
         </Field>
 
         <Field data-invalid={!!errors.address}>

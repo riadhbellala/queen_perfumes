@@ -22,7 +22,8 @@ export function createDeliveryFormSchema(messages: DeliveryFormMessages) {
       .transform((value) => value.replace(/[\s-]/g, ""))
       .refine((value) => ALGERIAN_PHONE_REGEX.test(value), messages.phoneInvalid),
     wilaya: z.string().min(1, messages.wilayaRequired),
-    commune: z.string().trim().min(2, messages.communeRequired),
+    commune: z.string().trim().min(1, messages.communeRequired),
+    deliveryType: z.enum(["home", "office"]),
     address: z.string().trim().min(5, messages.addressRequired),
     note: z.string().trim().optional(),
   });
