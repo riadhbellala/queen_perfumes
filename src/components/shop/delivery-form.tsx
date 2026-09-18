@@ -28,7 +28,7 @@ import { ShieldCheck, AlertCircle } from "lucide-react";
 type Locale = "fr" | "ar";
 
 const inputClassName =
-  "h-12 rounded-xl bg-zinc-50 border-zinc-200 focus:bg-white focus-visible:ring-zinc-900";
+  "h-12 rounded-xl bg-muted/60 border-border focus:bg-background focus-visible:ring-primary";
 
 export function DeliveryForm() {
   const { items, subtotal, clearCart } = useCart();
@@ -258,8 +258,8 @@ export function DeliveryForm() {
                 onClick={() => setValue("deliveryType", option, { shouldValidate: true })}
                 className={`h-12 rounded-xl border text-sm font-medium transition-colors ${
                   deliveryType === option
-                    ? "border-zinc-900 bg-zinc-900 text-white"
-                    : "border-zinc-200 bg-zinc-50 text-zinc-600 hover:border-zinc-300"
+                    ? "border-primary bg-primary text-primary-foreground"
+                    : "border-border bg-muted/60 text-zinc-600 hover:border-primary/40"
                 }`}
               >
                 {option === "home" ? t("deliveryHome") : t("deliveryOffice")}
@@ -275,7 +275,7 @@ export function DeliveryForm() {
             rows={3}
             placeholder={t("addressPlaceholder")}
             aria-invalid={!!errors.address}
-            className="rounded-xl bg-zinc-50 border-zinc-200 focus:bg-white focus-visible:ring-zinc-900"
+            className="rounded-xl bg-muted/60 border-border focus:bg-background focus-visible:ring-primary"
             {...register("address")}
           />
           <FieldError errors={[errors.address]} />
@@ -287,13 +287,13 @@ export function DeliveryForm() {
             id="note"
             rows={2}
             placeholder={t("orderNotePlaceholder")}
-            className="rounded-xl bg-zinc-50 border-zinc-200 focus:bg-white focus-visible:ring-zinc-900"
+            className="rounded-xl bg-muted/60 border-border focus:bg-background focus-visible:ring-primary"
             {...register("note")}
           />
         </Field>
       </FieldGroup>
 
-      <div className="flex items-start gap-3 rounded-2xl border border-zinc-200 bg-zinc-50 p-4">
+      <div className="flex items-start gap-3 rounded-2xl border border-border bg-muted/60 p-4">
         <ShieldCheck className="mt-0.5 shrink-0 text-zinc-700" size={20} />
         <div>
           <p className="text-sm font-semibold text-zinc-900">{t("codTitle")}</p>
@@ -301,7 +301,7 @@ export function DeliveryForm() {
         </div>
       </div>
 
-      <div className="rounded-2xl border border-zinc-200 p-5">
+      <div className="rounded-2xl border border-border p-5">
         <div className="flex items-center justify-between text-sm text-zinc-500">
           <span>{t("subtotal")}</span>
           <Price amount={subtotal} className="font-medium text-zinc-900" />
@@ -318,7 +318,7 @@ export function DeliveryForm() {
             <span className="text-zinc-300">—</span>
           )}
         </div>
-        <div className="mt-4 flex items-center justify-between border-t border-zinc-100 pt-4">
+        <div className="mt-4 flex items-center justify-between border-t border-border pt-4">
           <span className="font-medium text-zinc-900">{t("total")}</span>
           <Price amount={total} className="text-2xl font-bold text-zinc-900" />
         </div>
@@ -342,7 +342,7 @@ export function DeliveryForm() {
         type="submit"
         size="lg"
         disabled={isSubmitting || isFeeUnavailable}
-        className="h-14 w-full rounded-full text-lg font-semibold bg-zinc-900 text-white hover:bg-zinc-800 shadow-xl transition-all duration-300 hover:scale-[1.01] disabled:opacity-60"
+        className="h-14 w-full rounded-full text-lg font-semibold bg-primary text-primary-foreground hover:bg-primary/90 shadow-xl transition-all duration-300 hover:scale-[1.01] disabled:opacity-60"
       >
         {isSubmitting ? t("placingOrder") : t("placeOrder")}
       </Button>

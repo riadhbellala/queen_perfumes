@@ -44,7 +44,7 @@ export default async function PerfumeDetailPage({
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-12 lg:gap-20">
         {/* Left: Image */}
-        <div className="aspect-square bg-zinc-100 rounded-2xl flex items-center justify-center relative overflow-hidden">
+        <div className="aspect-square bg-muted rounded-2xl flex items-center justify-center relative overflow-hidden">
           {perfume.imageUrl ? (
             <img
               src={perfume.imageUrl}
@@ -79,7 +79,7 @@ export default async function PerfumeDetailPage({
 
         {/* Right: Details */}
         <div className="flex flex-col justify-center">
-          <h1 className="text-4xl lg:text-5xl font-semibold tracking-tight text-zinc-900 mb-6">
+          <h1 className="text-4xl lg:text-5xl font-display font-semibold tracking-tight text-zinc-900 mb-6">
             {perfume.name[loc]}
           </h1>
 
@@ -102,7 +102,7 @@ export default async function PerfumeDetailPage({
 
           <PerfumeAddToCart perfume={perfume} />
 
-          <div className="text-sm text-zinc-500 space-y-2 pt-6 border-t border-zinc-100">
+          <div className="text-sm text-zinc-500 space-y-2 pt-6 border-t border-border">
             <p>{tProduct("freeDelivery")}</p>
             <p>{tProduct("freeReturns")}</p>
           </div>

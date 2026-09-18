@@ -7,7 +7,8 @@
     "contact": "اتصل بنا",
     "composePack": "كوّن مجموعتك",
     "buildYourPack": "شكلي مجموعتك",
-    "cart": "السلة"
+    "cart": "السلة",
+    "searchPlaceholder": "ابحثي عن عطر…"
   },
   "Hero": {
     "title": "The Queen of Perfumes",
@@ -71,6 +72,8 @@
     "inStock": "متوفر",
     "outOfStock": "غير متوفر",
     "outOfStockBadge": "نفد",
+    "newBadge": "جديد",
+    "boxBadge": "مجموعة",
     "addToCart": "أضف إلى السلة",
     "viewPerfume": "عرض العطر",
     "freeDelivery": "توصيل مجاني للطلبات فوق 15000 دج.",

@@ -16,8 +16,8 @@ export default async function PerfumesPage() {
   const perfumes = (perfumeRows ?? []).map(mapPerfumeRow);
 
   return (
-    <div className="bg-white min-h-screen">
-      <div className="border-b border-zinc-100 bg-zinc-50/60">
+    <div className="bg-background min-h-screen">
+      <div className="border-b border-border bg-secondary/60">
         <div className="max-w-7xl mx-auto w-full px-6 lg:px-8 py-16 text-center">
           <h1 className="text-4xl md:text-5xl font-heading font-medium tracking-tight text-zinc-900">
             {t("title")}

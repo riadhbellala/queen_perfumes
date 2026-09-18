@@ -12,6 +12,7 @@ export type PerfumeRow = {
   concentration: string | null;
   stock: number;
   is_active: boolean;
+  created_at?: string;
 };
 
 export type PackRow = {
@@ -24,6 +25,7 @@ export type PackRow = {
   image_url: string | null;
   is_featured: boolean;
   is_active: boolean;
+  created_at?: string;
 };
 
 export type PackSizePricingRow = {
@@ -41,6 +43,7 @@ export function mapPerfumeRow(row: PerfumeRow): Perfume {
     scentFamily: row.scent_family ?? "",
     concentration: (row.concentration as Perfume["concentration"]) ?? "EDT",
     inStock: row.stock > 0,
+    createdAt: row.created_at,
   };
 }
 
@@ -52,6 +55,7 @@ export function mapPackRow(row: PackRow, perfumeIds: string[] = []): Pack {
     price: Number(row.price),
     imageUrl: row.image_url ?? undefined,
     perfumeIds,
+    createdAt: row.created_at,
   };
 }
 

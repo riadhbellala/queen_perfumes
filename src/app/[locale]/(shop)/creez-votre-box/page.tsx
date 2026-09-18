@@ -2,7 +2,6 @@ import { getTranslations } from "next-intl/server";
 import { createClient } from "@/lib/supabase/server";
 import { mapPerfumeRow, mapPackSizePricingRow } from "@/lib/supabase/mappers";
 import { CreezVotreBoxBuilder } from "@/components/shop/creez-votre-box-builder";
-import { HandWrittenTitle } from "@/components/ui/hand-writing-text";
 
 export default async function CreezVotreBoxPage() {
   const t = await getTranslations("PackBuilder");
@@ -17,10 +16,19 @@ export default async function CreezVotreBoxPage() {
   const pricing = (pricingRows ?? []).map(mapPackSizePricingRow);
 
   return (
-    <div className="bg-zinc-50/50 min-h-screen">
-      {/* Just the title — no separate hero banner, the grid follows right below */}
-      <div className="max-w-7xl mx-auto w-full px-6 lg:px-8">
-        <HandWrittenTitle title={t("title")} subtitle="" />
+    <div className="bg-background min-h-screen">
+      {/* Small hero — real product photo, dark overlay for legible white text.
+          Deliberately shorter than /boxes's own hero (this page has the whole
+          size+perfume picker below it and shouldn't push that too far down). */}
+      <div className="relative flex min-h-[32vh] w-full items-center justify-center overflow-hidden bg-[url('/assets/herosection/box-creating.webp')] bg-cover bg-center px-6 py-12 md:min-h-[38vh]">
+        <div className="absolute inset-0 bg-black/45" />
+        <div className="relative z-10 max-w-xl text-center">
+          <h1 className="font-display text-4xl tracking-tight text-white drop-shadow-md md:text-5xl">
+            {t("title")}
+          </h1>
+          <div className="mx-auto mt-4 h-px w-14 bg-white/40" />
+          <p className="mt-4 text-sm text-white/85 md:text-base">{t("subtitle")}</p>
+        </div>
       </div>
 
       <CreezVotreBoxBuilder perfumes={perfumes} pricing={pricing} />

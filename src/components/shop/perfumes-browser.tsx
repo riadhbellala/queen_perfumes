@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useMemo, useState } from "react";
+import { useSearchParams } from "next/navigation";
 import { useLocale, useTranslations } from "next-intl";
 import type { Perfume } from "@/types";
 import { ProductCard } from "@/components/shop/product-card";
@@ -51,6 +52,11 @@ function FilterGroup({
 export function PerfumesBrowser({ perfumes }: { perfumes: Perfume[] }) {
   const locale = useLocale() as "fr" | "ar";
   const t = useTranslations("Perfumes");
+  // Pre-filter from the drawer's search box (?q=<value>) — reactive to the
+  // URL, no local state needed since there's no on-page search input to
+  // desync from it.
+  const searchParams = useSearchParams();
+  const query = searchParams.get("q") ?? "";
 
   const scentFamilies = useMemo(
     () => Array.from(new Set(perfumes.map((p) => p.scentFamily).filter(Boolean))).sort(),
@@ -84,13 +90,15 @@ export function PerfumesBrowser({ perfumes }: { perfumes: Perfume[] }) {
   }
 
   const filtered = useMemo(() => {
+    const q = query.trim().toLowerCase();
     let result = perfumes.filter((p) => {
       const matchesFamily = selectedFamilies.length === 0 || selectedFamilies.includes(p.scentFamily);
       const matchesConcentration =
         selectedConcentrations.length === 0 || selectedConcentrations.includes(p.concentration);
       const price = p.price ?? 0;
       const matchesPrice = price >= priceRange[0] && price <= priceRange[1];
-      return matchesFamily && matchesConcentration && matchesPrice;
+      const matchesQuery = !q || p.name[locale].toLowerCase().includes(q);
+      return matchesFamily && matchesConcentration && matchesPrice && matchesQuery;
     });
 
     result = [...result];
@@ -99,7 +107,7 @@ export function PerfumesBrowser({ perfumes }: { perfumes: Perfume[] }) {
     else if (sortBy === "name-asc") result.sort((a, b) => a.name[locale].localeCompare(b.name[locale]));
 
     return result;
-  }, [perfumes, selectedFamilies, selectedConcentrations, priceRange, sortBy, locale]);
+  }, [perfumes, selectedFamilies, selectedConcentrations, priceRange, sortBy, locale, query]);
 
   const sortOptions: { key: SortKey; label: string }[] = [
     { key: "relevance", label: t("sortRelevance") },
@@ -183,8 +191,8 @@ export function PerfumesBrowser({ perfumes }: { perfumes: Perfume[] }) {
                     onClick={() => setSortBy(key)}
                     className={`shrink-0 px-4 py-2 rounded-full text-sm font-semibold transition-all ${
                       sortBy === key
-                        ? "bg-zinc-900 text-white shadow-md"
-                        : "bg-zinc-100 text-zinc-600 hover:bg-zinc-200"
+                        ? "bg-primary text-primary-foreground shadow-md"
+                        : "bg-muted text-zinc-600 hover:bg-muted/70"
                     }`}
                   >
                     {label}

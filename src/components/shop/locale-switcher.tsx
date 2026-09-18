@@ -1,33 +1,50 @@
 "use client";
 
 import { usePathname, useRouter } from "next/navigation";
-import { Globe } from "lucide-react";
 
+const LOCALES = [
+  { code: "fr", label: "FR" },
+  { code: "ar", label: "AR" },
+] as const;
+
+// A small fr/ar segmented toggle — deliberately compact on every screen
+// size, not just mobile. Shows both codes at once (rather than "click to
+// switch to the other one") so the current locale is always legible too.
 export function LocaleSwitcher() {
   const pathname = usePathname();
   const router = useRouter();
+  const currentLocale = pathname?.split("/")[1] || "ar";
 
-  const currentLocale = pathname?.split('/')[1] || 'ar';
-
-  const switchLocale = (newLocale: string) => {
-    if (!pathname) return;
-    if (newLocale === currentLocale) return;
-    const segments = pathname.split('/');
+  function switchLocale(newLocale: string) {
+    if (!pathname || newLocale === currentLocale) return;
+    const segments = pathname.split("/");
     segments[1] = newLocale;
-    router.push(segments.join('/'));
-  };
-
-  const otherLocale = currentLocale === 'ar' ? 'fr' : 'ar';
-  const label = currentLocale === 'ar' ? 'Français' : 'العربية';
+    router.push(segments.join("/"));
+  }
 
   return (
-    <button
-      onClick={() => switchLocale(otherLocale)}
-      className="flex items-center gap-2 text-sm font-medium text-zinc-600 hover:text-zinc-900 transition-colors bg-zinc-50 hover:bg-zinc-100 px-4 py-2 rounded-full border border-zinc-200"
+    <div
       dir="ltr"
+      className="inline-flex shrink-0 items-center gap-0.5 rounded-full border border-border bg-muted/60 p-0.5"
     >
-      <Globe className="w-4 h-4 opacity-70" />
-      <span>{label}</span>
-    </button>
+      {LOCALES.map(({ code, label }) => {
+        const isActive = code === currentLocale;
+        return (
+          <button
+            key={code}
+            type="button"
+            onClick={() => switchLocale(code)}
+            aria-current={isActive}
+            className={`rounded-full px-2 py-0.5 text-[11px] font-semibold tracking-wide transition-colors ${
+              isActive
+                ? "bg-primary text-primary-foreground shadow-sm"
+                : "text-zinc-400 hover:text-foreground"
+            }`}
+          >
+            {label}
+          </button>
+        );
+      })}
+    </div>
   );
 }

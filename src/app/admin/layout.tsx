@@ -27,6 +27,7 @@ export default function AdminRootLayout({
     <html
       lang="fr"
       dir="ltr"
+      data-theme="admin"
       className={`${inter.variable} h-full antialiased`}
       style={{ "--font-sans": "var(--font-inter)", "--font-body": "var(--font-inter)" } as React.CSSProperties}
     >

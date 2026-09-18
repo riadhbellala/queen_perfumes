@@ -15,7 +15,7 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import { CheckCircle2, ShoppingBag, Info, PackageOpen, ChevronRight, X } from "lucide-react";
+import { Check, ShoppingBag, Info, PackageOpen, ChevronRight, X } from "lucide-react";
 
 export function HomepageBoxBuilder({
   perfumes,
@@ -70,7 +70,7 @@ export function HomepageBoxBuilder({
     <div className="relative">
       {/* Selection tray — shows where a chosen perfume "lands" so it's obvious what's picked */}
       {selectedCount > 0 && (
-        <div className="mb-6 rounded-2xl border border-zinc-200 bg-white p-4 md:p-5 animate-in fade-in slide-in-from-top-2 duration-300">
+        <div className="mb-6 rounded-2xl border border-border bg-card p-4 md:p-5 animate-in fade-in slide-in-from-top-2 duration-300">
           <div className="flex items-center justify-between mb-3">
             <p className="text-sm font-semibold text-zinc-900">
               {locale === "fr" ? "Votre sélection" : "اختيارك"}
@@ -89,11 +89,11 @@ export function HomepageBoxBuilder({
                     type="button"
                     onClick={() => togglePerfume(id)}
                     aria-label={locale === "fr" ? "Retirer" : "إزالة"}
-                    className="absolute -top-1.5 -end-1.5 z-10 flex size-5 items-center justify-center rounded-full bg-zinc-900 text-white shadow ring-2 ring-white transition-transform hover:scale-110"
+                    className="absolute -top-1.5 -end-1.5 z-10 flex size-5 items-center justify-center rounded-full bg-primary text-primary-foreground shadow ring-2 ring-white transition-transform hover:scale-110"
                   >
                     <X size={11} />
                   </button>
-                  <div className="size-16 overflow-hidden rounded-xl bg-zinc-50 ring-1 ring-zinc-200">
+                  <div className="size-16 overflow-hidden rounded-xl bg-muted ring-1 ring-border">
                     {perfume.imageUrl && (
                       // eslint-disable-next-line @next/next/no-img-element
                       <img
@@ -124,21 +124,21 @@ export function HomepageBoxBuilder({
               <button
                 onClick={() => !isUnavailable && togglePerfume(perfume.id)}
                 disabled={isUnavailable || isMaxReached}
-                className={`relative rounded-2xl border-2 overflow-hidden text-start w-full transition-all duration-300 group ${
+                className={`group relative w-full overflow-hidden rounded-2xl text-start transition-all duration-300 ${
                   isSelected
-                    ? "border-zinc-900 shadow-xl ring-2 ring-zinc-900 ring-offset-4 scale-[1.02]"
+                    ? "ring-2 ring-primary shadow-xl"
                     : isUnavailable || isMaxReached
-                    ? "border-zinc-100 opacity-40 cursor-not-allowed"
-                    : "border-zinc-100 hover:border-zinc-300 hover:shadow-lg cursor-pointer hover:-translate-y-1"
+                    ? "ring-1 ring-border opacity-40 cursor-not-allowed"
+                    : "ring-1 ring-border hover:-translate-y-0.5 hover:shadow-lg hover:ring-primary/50 cursor-pointer"
                 }`}
               >
                 {/* Image */}
-                <div className="aspect-square overflow-hidden bg-zinc-50 relative">
+                <div className="relative aspect-[3/4] overflow-hidden bg-muted">
                   {perfume.imageUrl ? (
                     <img
                       src={perfume.imageUrl}
                       alt={perfume.name[locale]}
-                      className="object-cover w-full h-full transition-transform duration-700 group-hover:scale-110"
+                      className="object-cover w-full h-full transition-transform duration-700 group-hover:scale-105"
                     />
                   ) : (
                     <div className="w-full h-full flex items-center justify-center text-zinc-300">
@@ -146,26 +146,33 @@ export function HomepageBoxBuilder({
                     </div>
                   )}
 
-                  {/* Selected overlay */}
-                  {isSelected && (
-                    <div className="absolute inset-0 bg-zinc-900/50 flex items-center justify-center backdrop-blur-[2px] transition-all">
-                      <div className="bg-white text-zinc-900 p-3 rounded-full shadow-2xl scale-in-center">
-                        <CheckCircle2 className="w-8 h-8" strokeWidth={3} />
-                      </div>
-                    </div>
-                  )}
+                  {isSelected && <div className="absolute inset-0 bg-primary/10" />}
 
-                  {isUnavailable && (
-                    <div className="absolute top-3 start-3 bg-red-100 text-red-700 text-xs font-bold px-3 py-1.5 rounded-full shadow-sm">
+                  {/* Status: out-of-stock always wins over the selected badge —
+                      the two states can't coexist in practice anyway (an
+                      unavailable perfume can't be toggled on), but keeping an
+                      explicit priority avoids ever stacking both. */}
+                  {isUnavailable ? (
+                    <span className="absolute start-3 top-3 z-10 rounded-full bg-red-950/85 px-3 py-1 text-[11px] font-semibold tracking-wide text-white shadow-sm">
                       {locale === "fr" ? "Rupture" : "نفد"}
-                    </div>
+                    </span>
+                  ) : (
+                    isSelected && (
+                      <span className="absolute start-3 top-3 z-10 grid size-7 place-items-center rounded-full bg-primary text-primary-foreground shadow-md">
+                        <Check size={14} strokeWidth={3} />
+                      </span>
+                    )
                   )}
                 </div>
 
-                {/* Info */}
-                <div className="p-5 bg-white">
-                  <h3 className="font-heading font-semibold text-zinc-900 text-lg leading-tight mb-1">{perfume.name[locale]}</h3>
-                  <p className="text-sm text-zinc-500 font-medium">{perfume.scentFamily} · {perfume.concentration}</p>
+                {/* Caption */}
+                <div className="p-4">
+                  <h3 className="font-display text-base font-semibold leading-tight text-foreground">
+                    {perfume.name[locale]}
+                  </h3>
+                  <p className="mt-1 text-xs uppercase tracking-wide text-zinc-400">
+                    {perfume.scentFamily} · {perfume.concentration}
+                  </p>
                 </div>
               </button>
 
@@ -173,10 +180,10 @@ export function HomepageBoxBuilder({
               <Dialog>
                 <DialogTrigger
                   render={
-                    <button className="absolute top-3 end-3 bg-white/90 hover:bg-white text-zinc-600 hover:text-zinc-900 p-2 rounded-full shadow-md backdrop-blur-md transition-all hover:scale-110 focus:outline-none z-10" />
+                    <button className="absolute end-3 top-3 z-10 rounded-full bg-white/80 p-2 text-zinc-600 shadow-sm ring-1 ring-black/5 backdrop-blur-md transition-all hover:bg-white hover:text-zinc-900 focus:outline-none" />
                   }
                 >
-                  <Info size={18} />
+                  <Info size={16} />
                 </DialogTrigger>
                 <DialogContent className="sm:max-w-md rounded-3xl">
                   <DialogHeader>
@@ -191,10 +198,10 @@ export function HomepageBoxBuilder({
                       />
                     )}
                     <div className="flex items-center gap-3 mb-6">
-                      <span className="bg-zinc-100 text-zinc-800 px-4 py-1.5 rounded-full text-sm font-semibold tracking-wide">
+                      <span className="bg-muted text-zinc-800 px-4 py-1.5 rounded-full text-sm font-semibold tracking-wide">
                         {perfume.scentFamily}
                       </span>
-                      <span className="bg-zinc-100 text-zinc-800 px-4 py-1.5 rounded-full text-sm font-semibold tracking-wide">
+                      <span className="bg-muted text-zinc-800 px-4 py-1.5 rounded-full text-sm font-semibold tracking-wide">
                         {perfume.concentration}
                       </span>
                     </div>
@@ -214,7 +221,7 @@ export function HomepageBoxBuilder({
                       className={`w-full h-14 text-lg rounded-full font-semibold transition-all ${
                         isSelected 
                           ? "bg-red-50 text-red-600 hover:bg-red-100 hover:text-red-700" 
-                          : "bg-zinc-900 text-white hover:bg-zinc-800 shadow-xl hover:shadow-2xl"
+                          : "bg-primary text-primary-foreground hover:bg-primary/90 shadow-xl hover:shadow-2xl"
                       }`}
                     >
                       {isSelected 
@@ -232,11 +239,11 @@ export function HomepageBoxBuilder({
       {/* Sticky Bottom Widget */}
       {selectedCount > 0 && (
         <div className="fixed bottom-6 left-1/2 -translate-x-1/2 w-full max-w-2xl px-4 z-50 animate-in slide-in-from-bottom-10 fade-in duration-300">
-          <div className="bg-zinc-900 text-white p-2 rounded-full shadow-2xl flex items-center justify-between border border-white/10 backdrop-blur-xl">
-            
+          <div className="bg-primary text-primary-foreground p-2 rounded-full shadow-2xl flex items-center justify-between border border-white/10 backdrop-blur-xl">
+
             <div className="flex items-center gap-4 ps-6 py-2">
               <div className="bg-white/10 p-2 rounded-full">
-                <PackageOpen size={24} className="text-white" />
+                <PackageOpen size={24} className="text-primary-foreground" />
               </div>
               <div>
                 <p className="font-semibold text-lg leading-tight">
@@ -244,9 +251,9 @@ export function HomepageBoxBuilder({
                   {locale === "fr" ? (selectedCount > 1 ? "Parfums sélectionnés" : "Parfum sélectionné") : "عطور محددة"}
                 </p>
                 {currentPricing ? (
-                  <Price amount={currentPricing.price} className="text-sm text-zinc-400 font-medium" />
+                  <Price amount={currentPricing.price} className="text-sm text-primary-foreground/70 font-medium" />
                 ) : (
-                  <p className="text-sm text-zinc-400 font-medium">
+                  <p className="text-sm text-primary-foreground/70 font-medium">
                     {locale === "fr" ? "Ajoutez-en 1 autre pour une box" : "أضف 1 آخر لتكوين مجموعة"}
                   </p>
                 )}

@@ -12,7 +12,7 @@ type Locale = "fr" | "ar";
 
 function LineThumbnail({ src, alt }: { src?: string; alt: string }) {
   return (
-    <div className="size-12 shrink-0 overflow-hidden rounded-lg bg-zinc-100">
+    <div className="size-12 shrink-0 overflow-hidden rounded-lg bg-muted">
       {src ? (
         // eslint-disable-next-line @next/next/no-img-element
         <img src={src} alt={alt} className="h-full w-full object-cover" />
@@ -29,8 +29,8 @@ function LineThumbnail({ src, alt }: { src?: string; alt: string }) {
 // full description — always visible, nothing to click or expand.
 function PerfumeCard({ perfume, locale }: { perfume: CartPerfumeSummary; locale: Locale }) {
   return (
-    <div className="flex flex-col gap-4 sm:flex-row rounded-2xl border border-zinc-200 bg-white p-4">
-      <div className="aspect-square w-full shrink-0 overflow-hidden rounded-xl bg-zinc-50 sm:w-40 md:w-44">
+    <div className="flex flex-col gap-4 sm:flex-row rounded-2xl border border-border bg-card p-4">
+      <div className="aspect-square w-full shrink-0 overflow-hidden rounded-xl bg-muted sm:w-40 md:w-44">
         {perfume.imageUrl ? (
           // eslint-disable-next-line @next/next/no-img-element
           <img

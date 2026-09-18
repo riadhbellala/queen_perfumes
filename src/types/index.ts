@@ -13,6 +13,8 @@ export type Perfume = {
   // The DB's check constraint (perfumes_concentration_check) allows all four.
   concentration: "EDT" | "EDP" | "Parfum" | "Extrait";
   inStock: boolean;
+  /** ISO timestamp from the DB row — drives ProductCard's "Nouveau" ribbon. */
+  createdAt?: string;
 };
 
 export type Pack = {
@@ -22,6 +24,8 @@ export type Pack = {
   price: number;
   imageUrl?: string;
   perfumeIds: string[];
+  /** ISO timestamp from the DB row — drives ProductCard's "Nouveau" ribbon. */
+  createdAt?: string;
 };
 
 export type PackSizePricing = {

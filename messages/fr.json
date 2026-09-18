@@ -7,7 +7,8 @@
     "contact": "Contact",
     "composePack": "Composez votre box",
     "buildYourPack": "Créez votre box",
-    "cart": "Panier"
+    "cart": "Panier",
+    "searchPlaceholder": "Rechercher un parfum…"
   },
   "Hero": {
     "title": "The Queen of Perfumes",
@@ -71,6 +72,8 @@
     "inStock": "En stock",
     "outOfStock": "Rupture de stock",
     "outOfStockBadge": "Rupture",
+    "newBadge": "Nouveau",
+    "boxBadge": "Box",
     "addToCart": "Ajouter au panier",
     "viewPerfume": "Voir le parfum",
     "freeDelivery": "Livraison offerte dès 15000 DA d'achat.",

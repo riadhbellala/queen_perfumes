@@ -1,80 +1,90 @@
 import React from "react";
 import Link from "next/link";
 import { Perfume, Pack } from "@/types";
-import { Badge } from "@/components/ui/badge";
 import { Price } from "@/components/shop/price";
 import { useLocale, useTranslations } from "next-intl";
+import { ShoppingBag } from "lucide-react";
+import { cn } from "cn";
+
+// A card is "new" for 14 days after its DB row was created — no admin toggle,
+// no schema change, just a window off `created_at` that's already selected
+// by every `select("*")` query. Tune this one constant if that window ever
+// needs to change.
+const NEW_WINDOW_MS = 14 * 24 * 60 * 60 * 1000;
 
 interface ProductCardProps {
   product: Perfume | Pack;
   type: "perfume" | "pack";
-  /** Optional small subtitle/meta line shown below the title (e.g. "4 parfums") */
-  meta?: string;
-  /** Optional badge label overlaid on the image corner (e.g. "Box") */
-  badgeLabel?: string;
 }
 
-export function ProductCard({ product, type, meta, badgeLabel }: ProductCardProps) {
-  const locale = useLocale() as 'fr' | 'ar';
-  const t = useTranslations('Product');
+function RibbonBadge({ label, tone }: { label: string; tone: "gold" | "muted" }) {
+  return (
+    <div className="absolute -start-10 top-4 z-10 w-36 ltr:-rotate-45 rtl:rotate-45">
+      <div
+        className={cn(
+          "py-1 text-center text-[10px] font-semibold uppercase tracking-wider shadow-sm",
+          tone === "gold" ? "bg-primary text-primary-foreground" : "bg-red-900/85 text-white"
+        )}
+      >
+        {label}
+      </div>
+    </div>
+  );
+}
+
+// Image-forward card used for both perfumes and boxes — one consistent card
+// language across the whole catalog, not two different styles. The photo is
+// the card (portrait 3:4, no border, no heavy shadow); the caption below it
+// is centered and minimal (name + price only). Works as a grid cell
+// (/parfums, /boxes) and as a carousel slide (BoxesCarousel) unchanged.
+export function ProductCard({ product, type }: ProductCardProps) {
+  const locale = useLocale() as "fr" | "ar";
+  const t = useTranslations("Product");
   const isPerfume = type === "perfume";
   const perfume = isPerfume ? (product as Perfume) : null;
   const href = `/${locale}${isPerfume ? `/parfums/${product.id}` : `/boxes/${product.id}`}`;
 
+  // Date.now() is technically impure during render, but a coarse ~14-day
+  // ribbon window tolerates that fine — no visible effect from a few ms of
+  // render-time skew, and there's no reactive "now" to plumb in from outside.
+  // eslint-disable-next-line react-hooks/purity
+  const isNew = !!product.createdAt && Date.now() - new Date(product.createdAt).getTime() < NEW_WINDOW_MS;
+
+  // Priority order: out of stock beats everything (it's the most actionable
+  // fact), then the catalog-type label, then "new" — never stack two ribbons.
+  const ribbon =
+    perfume && !perfume.inStock
+      ? { label: t("outOfStockBadge"), tone: "muted" as const }
+      : !isPerfume
+        ? { label: t("boxBadge"), tone: "gold" as const }
+        : isNew
+          ? { label: t("newBadge"), tone: "gold" as const }
+          : null;
+
   return (
-    <Link href={href} className="group block overflow-hidden rounded-xl border border-zinc-100 bg-white shadow-sm transition-all duration-300 hover:shadow-xl hover:-translate-y-1">
-      <div className="aspect-[4/5] bg-zinc-50 flex items-center justify-center relative overflow-hidden">
-        {/* Placeholder image */}
+    <Link href={href} className="group block">
+      <div className="relative aspect-[3/4] w-full overflow-hidden rounded-2xl bg-muted">
         {product.imageUrl ? (
-          <img src={product.imageUrl} alt={product.name[locale]} className="object-cover w-full h-full transition-transform duration-700 group-hover:scale-105" />
+          <img
+            src={product.imageUrl}
+            alt={product.name[locale]}
+            className="absolute inset-0 h-full w-full object-cover transition-transform duration-700 ease-out group-hover:scale-105"
+          />
         ) : (
-          <div className="w-full h-full bg-zinc-50 flex items-center justify-center text-zinc-300">
-            <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1" strokeLinecap="round" strokeLinejoin="round">
-              <rect width="18" height="18" x="3" y="3" rx="2" ry="2" />
-              <circle cx="9" cy="9" r="2" />
-              <path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21" />
-            </svg>
+          <div className="absolute inset-0 flex items-center justify-center text-zinc-300">
+            <ShoppingBag size={40} />
           </div>
-        )}
-        
-        {/* Overlays */}
-        <div className="absolute inset-0 bg-black/5 group-hover:bg-transparent transition-colors duration-500" />
-        
-        {perfume && !perfume.inStock && (
-          <div className="absolute top-3 end-3 bg-white/90 backdrop-blur text-red-600 text-xs font-semibold px-3 py-1.5 rounded-full shadow-sm">
-            {t('outOfStockBadge')}
-          </div>
-        )}
-        {badgeLabel && (
-          <div className="absolute top-3 start-3 bg-black/80 backdrop-blur text-white text-xs font-semibold px-3 py-1.5 rounded-full shadow-sm">
-            {badgeLabel}
-          </div>
-        )}
-      </div>
-      
-      <div className="p-5 flex flex-col gap-3">
-        <h3 className="font-heading text-xl font-medium leading-tight text-zinc-900 group-hover:text-zinc-600 transition-colors">{product.name[locale]}</h3>
-        
-        {meta && (
-          <p className="text-sm text-zinc-500">{meta}</p>
         )}
 
-        {isPerfume && perfume && (
-          <div className="flex gap-2">
-            <Badge variant="secondary" className="font-medium bg-zinc-100 hover:bg-zinc-200 text-zinc-700 text-xs rounded-full px-3 py-0.5">{perfume.scentFamily}</Badge>
-            <Badge variant="outline" className="font-medium border-zinc-200 text-zinc-600 text-xs rounded-full px-3 py-0.5">{perfume.concentration}</Badge>
-          </div>
-        )}
-        
-        {!isPerfume && !meta && (
-          <p className="text-sm text-zinc-500 line-clamp-2 leading-relaxed">{product.description[locale]}</p>
-        )}
-        
+        {ribbon && <RibbonBadge label={ribbon.label} tone={ribbon.tone} />}
+      </div>
+
+      <div className="mt-4 flex flex-col items-center gap-1 px-1 text-center">
+        <h3 className="font-display text-lg font-semibold leading-tight text-foreground transition-colors group-hover:text-primary">
+          {product.name[locale]}
+        </h3>
         {product.price !== undefined && (
-          <div className="mt-1 flex items-center justify-between">
-            <Price amount={product.price} className="text-lg font-semibold text-zinc-900" />
-            <span className="text-sm font-medium text-zinc-400 group-hover:text-zinc-900 transition-colors uppercase tracking-wider">{isPerfume ? t('viewPerfume') : t('addToCart')}</span>
-          </div>
+          <Price amount={product.price} className="text-sm font-medium text-accent" />
         )}
       </div>
     </Link>

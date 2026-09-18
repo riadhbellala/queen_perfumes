@@ -10,6 +10,14 @@
   --font-sans: var(--font-sans);
   --font-mono: var(--font-geist-mono);
   --font-heading: var(--font-heading, var(--font-sans));
+  /* Alias, not a second font system — "font-display" is this task's name for
+     the exact same serif (Cormorant Garamond/fr, Amiri/ar) already wired up
+     as --font-heading in [locale]/layout.tsx. Kept as one underlying font
+     chain on purpose: renaming every existing `font-heading` usage across
+     the codebase to `font-display` would be pure churn for zero visual
+     change, and risks missing a spot. Use whichever class name reads more
+     naturally in new code — they're interchangeable. */
+  --font-display: var(--font-heading, var(--font-sans));
   --font-body: var(--font-body, var(--font-sans));
   --color-sidebar-ring: var(--sidebar-ring);
   --color-sidebar-border: var(--sidebar-border);
@@ -49,25 +57,32 @@
   --radius-4xl: calc(var(--radius) * 2.6);
 }
 
+/* Brand palette (60-30-10), storefront only — see the admin override block
+   below. Dominant 60% Ivory Cream #FBF7F0, secondary 30% Warm Sand #EDE3D3,
+   accent 10% Golden Amber #C9A15C, text ink Warm Dark Brown #3A2F26.
+   --primary uses a darkened, button-only gold (#8C6A34) instead of the
+   lighter accent gold: white text on #C9A15C is only 2.4:1 contrast (fails
+   WCAG AA), white on #8C6A34 is 4.97:1. The lighter accent gold stays for
+   badges/icons/borders/focus rings, where there's no text-on-gold to fail. */
 :root {
-  --background: oklch(1 0 0);
-  --foreground: oklch(0.145 0 0);
-  --card: oklch(1 0 0);
-  --card-foreground: oklch(0.145 0 0);
-  --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.145 0 0);
-  --primary: oklch(0.205 0 0);
-  --primary-foreground: oklch(0.985 0 0);
-  --secondary: oklch(0.97 0 0);
-  --secondary-foreground: oklch(0.205 0 0);
-  --muted: oklch(0.97 0 0);
-  --muted-foreground: oklch(0.556 0 0);
-  --accent: oklch(0.97 0 0);
-  --accent-foreground: oklch(0.205 0 0);
+  --background: hsl(38, 58%, 96%);
+  --foreground: hsl(27, 21%, 19%);
+  --card: hsl(38, 58%, 96%);
+  --card-foreground: hsl(27, 21%, 19%);
+  --popover: hsl(38, 58%, 96%);
+  --popover-foreground: hsl(27, 21%, 19%);
+  --primary: hsl(37, 46%, 38%);
+  --primary-foreground: hsl(0, 0%, 100%);
+  --secondary: hsl(37, 42%, 88%);
+  --secondary-foreground: hsl(27, 21%, 19%);
+  --muted: hsl(37, 42%, 88%);
+  --muted-foreground: hsl(27, 21%, 19%);
+  --accent: hsl(38, 50%, 57%);
+  --accent-foreground: hsl(27, 21%, 19%);
   --destructive: oklch(0.577 0.245 27.325);
-  --border: oklch(0.922 0 0);
-  --input: oklch(0.922 0 0);
-  --ring: oklch(0.708 0 0);
+  --border: hsl(37, 42%, 88%);
+  --input: hsl(37, 42%, 88%);
+  --ring: hsl(38, 50%, 57%);
   --chart-1: oklch(0.87 0 0);
   --chart-2: oklch(0.556 0 0);
   --chart-3: oklch(0.439 0 0);
@@ -84,38 +99,32 @@
   --sidebar-ring: oklch(0.708 0 0);
 }
 
-.dark {
-  --background: oklch(0.145 0 0);
-  --foreground: oklch(0.985 0 0);
-  --card: oklch(0.205 0 0);
-  --card-foreground: oklch(0.985 0 0);
-  --popover: oklch(0.205 0 0);
-  --popover-foreground: oklch(0.985 0 0);
-  --primary: oklch(0.922 0 0);
-  --primary-foreground: oklch(0.205 0 0);
-  --secondary: oklch(0.269 0 0);
-  --secondary-foreground: oklch(0.985 0 0);
-  --muted: oklch(0.269 0 0);
-  --muted-foreground: oklch(0.708 0 0);
-  --accent: oklch(0.269 0 0);
-  --accent-foreground: oklch(0.985 0 0);
-  --destructive: oklch(0.704 0.191 22.216);
-  --border: oklch(1 0 0 / 10%);
-  --input: oklch(1 0 0 / 15%);
-  --ring: oklch(0.556 0 0);
-  --chart-1: oklch(0.87 0 0);
-  --chart-2: oklch(0.556 0 0);
-  --chart-3: oklch(0.439 0 0);
-  --chart-4: oklch(0.371 0 0);
-  --chart-5: oklch(0.269 0 0);
-  --sidebar: oklch(0.205 0 0);
-  --sidebar-foreground: oklch(0.985 0 0);
-  --sidebar-primary: oklch(0.488 0.243 264.376);
-  --sidebar-primary-foreground: oklch(0.985 0 0);
-  --sidebar-accent: oklch(0.269 0 0);
-  --sidebar-accent-foreground: oklch(0.985 0 0);
-  --sidebar-border: oklch(1 0 0 / 10%);
-  --sidebar-ring: oklch(0.556 0 0);
+/* Admin dashboard has its own root <html> (src/app/admin/layout.tsx, marked
+   data-theme="admin") entirely separate from the [locale] storefront root —
+   but both pull in this same globals.css, and the shared ui/* primitives
+   (Button, Badge, Switch, Input, Select, Sheet, Dialog…) that admin pages
+   use all read these same --background/--primary/--muted/etc tokens. Without
+   this override, the brand palette above would leak into admin buttons,
+   badges and form fields. This block pins admin back to the original
+   neutral zinc/gray tokens it had before this task, unchanged. */
+html[data-theme="admin"] {
+  --background: oklch(1 0 0);
+  --foreground: oklch(0.145 0 0);
+  --card: oklch(1 0 0);
+  --card-foreground: oklch(0.145 0 0);
+  --popover: oklch(1 0 0);
+  --popover-foreground: oklch(0.145 0 0);
+  --primary: oklch(0.205 0 0);
+  --primary-foreground: oklch(0.985 0 0);
+  --secondary: oklch(0.97 0 0);
+  --secondary-foreground: oklch(0.205 0 0);
+  --muted: oklch(0.97 0 0);
+  --muted-foreground: oklch(0.556 0 0);
+  --accent: oklch(0.97 0 0);
+  --accent-foreground: oklch(0.205 0 0);
+  --border: oklch(0.922 0 0);
+  --input: oklch(0.922 0 0);
+  --ring: oklch(0.708 0 0);
 }
 
 @layer base {
@@ -197,4 +206,15 @@
   .stagger-fade > * {
     animation: none;
   }
+}
+
+/* Tailwind ships no scrollbar-hiding utility — `scrollbar-none` was already
+   referenced in a couple of components as if it were one (a no-op class,
+   scrollbar left visible). Defining it here for real, used by the sort-pill
+   rows and the packs carousel below. */
+.scrollbar-none {
+  scrollbar-width: none;
+}
+.scrollbar-none::-webkit-scrollbar {
+  display: none;
 }

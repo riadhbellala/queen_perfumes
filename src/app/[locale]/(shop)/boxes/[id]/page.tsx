@@ -57,7 +57,7 @@ export default async function BoxDetailPage({
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-12 lg:gap-20 mb-24">
         {/* Left: Image */}
-        <div className="aspect-square bg-zinc-100 rounded-2xl flex items-center justify-center relative overflow-hidden">
+        <div className="aspect-square bg-muted rounded-2xl flex items-center justify-center relative overflow-hidden">
           {pack.imageUrl ? (
             <img
               src={pack.imageUrl}
@@ -89,7 +89,7 @@ export default async function BoxDetailPage({
 
         {/* Right: Details */}
         <div className="flex flex-col justify-center">
-          <h1 className="text-4xl lg:text-5xl font-semibold tracking-tight text-zinc-900 mb-6">
+          <h1 className="text-4xl lg:text-5xl font-display font-semibold tracking-tight text-zinc-900 mb-6">
             {pack.name[loc]}
           </h1>
 
@@ -101,7 +101,7 @@ export default async function BoxDetailPage({
 
           <BoxAddToCart pack={pack} perfumes={packPerfumes} />
 
-          <div className="text-sm text-zinc-500 space-y-2 pt-6 border-t border-zinc-100">
+          <div className="text-sm text-zinc-500 space-y-2 pt-6 border-t border-border">
             <p>{tProduct("freeDelivery")}</p>
             <p>{tProduct("freeReturns")}</p>
           </div>
@@ -110,19 +110,19 @@ export default async function BoxDetailPage({
 
       {/* Cette box contient */}
       <section>
-        <h2 className="text-2xl font-semibold tracking-tight text-zinc-900 mb-8">
+        <h2 className="text-2xl font-display font-semibold tracking-tight text-zinc-900 mb-8">
           {tPack("contains")}
         </h2>
         <div className="flex flex-col gap-6">
           {packPerfumes.map((perfume) => (
             <div
               key={perfume.id}
-              className="flex flex-col sm:flex-row gap-6 p-6 rounded-xl border bg-white shadow-sm hover:shadow-md transition-shadow"
+              className="flex flex-col sm:flex-row gap-6 p-6 rounded-xl border bg-card shadow-sm hover:shadow-md transition-shadow"
             >
               {/* Small image placeholder */}
               <Link
                 href={`/${locale}/parfums/${perfume.id}`}
-                className="shrink-0 w-full sm:w-48 aspect-square sm:aspect-[4/3] bg-zinc-100 rounded-lg flex items-center justify-center overflow-hidden"
+                className="shrink-0 w-full sm:w-48 aspect-square sm:aspect-[4/3] bg-muted rounded-lg flex items-center justify-center overflow-hidden"
               >
                 {perfume.imageUrl ? (
                   <img
@@ -157,7 +157,7 @@ export default async function BoxDetailPage({
                     href={`/${locale}/parfums/${perfume.id}`}
                     className="hover:underline underline-offset-4 decoration-1"
                   >
-                    <h3 className="text-xl font-semibold text-zinc-900">
+                    <h3 className="text-xl font-display font-semibold text-zinc-900">
                       {perfume.name[loc]}
                     </h3>
                   </Link>

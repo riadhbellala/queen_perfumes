@@ -3,11 +3,11 @@ import Link from "next/link";
 import { getTranslations } from "next-intl/server";
 import { createClient } from "@/lib/supabase/server";
 import { mapPackRow, mapPerfumeRow, mapPackSizePricingRow } from "@/lib/supabase/mappers";
-import { ProductCard } from "@/components/shop/product-card";
+import { BoxesCarousel } from "@/components/shop/boxes-carousel";
 import { HomepageBoxBuilder } from "@/components/shop/homepage-box-builder";
 import { Price } from "@/components/shop/price";
 import { InstagramIcon, TikTokIcon } from "@/components/shop/social-icons";
-import { Button } from "@/components/ui/button";
+import { FlowButton } from "@/components/ui/flow-button";
 
 export default async function ShopHomepage({
   params,
@@ -66,12 +66,8 @@ export default async function ShopHomepage({
           </div>
 
           <div className="flex flex-col items-center gap-6">
-            {/* Creative CTA Button with a static soft glow (no infinite animation) */}
-            <Link href={`/${locale}/creez-votre-box`} className="group relative inline-flex items-center justify-center mt-2">
-              <div className="absolute -inset-1 bg-white/30 rounded-full blur-md opacity-70 group-hover:opacity-100 transition-opacity duration-500 animate-[pulse_3s_ease-in-out_infinite]"></div>
-              <Button size="lg" className="relative h-12 md:h-14 px-10 md:px-12 text-base md:text-lg font-heading tracking-wide rounded-full bg-white/95 text-zinc-900 hover:bg-white shadow-2xl transition-all duration-300 hover:scale-105 border border-white/50">
-                {tHero("cta")}
-              </Button>
+            <Link href={`/${locale}/creez-votre-box`} className="mt-2 inline-flex">
+              <FlowButton text={tHero("cta")} variant="light" />
             </Link>
 
             {/* Social Icons with frosted glass effect */}
@@ -90,53 +86,52 @@ export default async function ShopHomepage({
       </section>
 
       {/* Infinite Marquee */}
-      <div className="marquee-wrapper bg-[#E8E2D6] text-[#5c4a3d] border-b border-[#D6CFC0] py-3 text-sm font-medium tracking-wide">
+      <div className="marquee-wrapper bg-secondary text-foreground border-b border-[#D6CFC0] py-3 text-sm font-medium tracking-wide">
         <div className="marquee-track">
           {/* First half */}
           <div className="marquee-half">
-            <span className="inline-flex items-center gap-2 shrink-0"><span className="w-1.5 h-1.5 rounded-full bg-[#8c7a6b]" />{tHome("marqueeClient")}</span>
-            <span className="inline-flex items-center gap-2 shrink-0"><span className="w-1.5 h-1.5 rounded-full bg-[#8c7a6b]" />{tHome("marqueeShipping")}</span>
-            <span className="inline-flex items-center gap-2 shrink-0"><span className="w-1.5 h-1.5 rounded-full bg-[#8c7a6b]" />{tHome("marqueeBrand")}</span>
-            <span className="inline-flex items-center gap-2 shrink-0"><span className="w-1.5 h-1.5 rounded-full bg-[#8c7a6b]" />{tHome("marqueeClient")}</span>
-            <span className="inline-flex items-center gap-2 shrink-0"><span className="w-1.5 h-1.5 rounded-full bg-[#8c7a6b]" />{tHome("marqueeShipping")}</span>
-            <span className="inline-flex items-center gap-2 shrink-0"><span className="w-1.5 h-1.5 rounded-full bg-[#8c7a6b]" />{tHome("marqueeBrand")}</span>
+            <span className="inline-flex items-center gap-2 shrink-0"><span className="w-1.5 h-1.5 rounded-full bg-accent" />{tHome("marqueeClient")}</span>
+            <span className="inline-flex items-center gap-2 shrink-0"><span className="w-1.5 h-1.5 rounded-full bg-accent" />{tHome("marqueeShipping")}</span>
+            <span className="inline-flex items-center gap-2 shrink-0"><span className="w-1.5 h-1.5 rounded-full bg-accent" />{tHome("marqueeBrand")}</span>
+            <span className="inline-flex items-center gap-2 shrink-0"><span className="w-1.5 h-1.5 rounded-full bg-accent" />{tHome("marqueeClient")}</span>
+            <span className="inline-flex items-center gap-2 shrink-0"><span className="w-1.5 h-1.5 rounded-full bg-accent" />{tHome("marqueeShipping")}</span>
+            <span className="inline-flex items-center gap-2 shrink-0"><span className="w-1.5 h-1.5 rounded-full bg-accent" />{tHome("marqueeBrand")}</span>
           </div>
           {/* Exact duplicate — enables seamless loop */}
           <div className="marquee-half">
-            <span className="inline-flex items-center gap-2 shrink-0"><span className="w-1.5 h-1.5 rounded-full bg-[#8c7a6b]" />{tHome("marqueeClient")}</span>
-            <span className="inline-flex items-center gap-2 shrink-0"><span className="w-1.5 h-1.5 rounded-full bg-[#8c7a6b]" />{tHome("marqueeShipping")}</span>
-            <span className="inline-flex items-center gap-2 shrink-0"><span className="w-1.5 h-1.5 rounded-full bg-[#8c7a6b]" />{tHome("marqueeBrand")}</span>
-            <span className="inline-flex items-center gap-2 shrink-0"><span className="w-1.5 h-1.5 rounded-full bg-[#8c7a6b]" />{tHome("marqueeClient")}</span>
-            <span className="inline-flex items-center gap-2 shrink-0"><span className="w-1.5 h-1.5 rounded-full bg-[#8c7a6b]" />{tHome("marqueeShipping")}</span>
-            <span className="inline-flex items-center gap-2 shrink-0"><span className="w-1.5 h-1.5 rounded-full bg-[#8c7a6b]" />{tHome("marqueeBrand")}</span>
+            <span className="inline-flex items-center gap-2 shrink-0"><span className="w-1.5 h-1.5 rounded-full bg-accent" />{tHome("marqueeClient")}</span>
+            <span className="inline-flex items-center gap-2 shrink-0"><span className="w-1.5 h-1.5 rounded-full bg-accent" />{tHome("marqueeShipping")}</span>
+            <span className="inline-flex items-center gap-2 shrink-0"><span className="w-1.5 h-1.5 rounded-full bg-accent" />{tHome("marqueeBrand")}</span>
+            <span className="inline-flex items-center gap-2 shrink-0"><span className="w-1.5 h-1.5 rounded-full bg-accent" />{tHome("marqueeClient")}</span>
+            <span className="inline-flex items-center gap-2 shrink-0"><span className="w-1.5 h-1.5 rounded-full bg-accent" />{tHome("marqueeShipping")}</span>
+            <span className="inline-flex items-center gap-2 shrink-0"><span className="w-1.5 h-1.5 rounded-full bg-accent" />{tHome("marqueeBrand")}</span>
           </div>
         </div>
       </div>
 
-      {/* Recommended Packs */}
-      <section className="py-24 px-6 lg:px-8 max-w-7xl mx-auto w-full">
-        <div className="text-center mb-16">
+      {/* Recommended Packs — the carousel itself is full-width (only a
+          small side gutter, no max-w-7xl cap) so its big 2-up/3-up cards
+          actually span the page; the heading/CTA stay in the usual
+          max-w-7xl reading column. */}
+      <section className="py-14 md:py-16 w-full">
+        <div className="max-w-7xl mx-auto px-6 lg:px-8 text-center mb-10">
           <h2 className="text-4xl md:text-5xl font-heading text-zinc-900 mb-4">{tHome("recommendedPacksTitle")}</h2>
           <p className="text-zinc-500 max-w-xl mx-auto">{tHome("packsSubtitle")}</p>
         </div>
-        <div className="stagger-fade grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-5 lg:gap-6">
-          {recommendedPacks.map(pack => (
-            <ProductCard key={pack.id} product={pack} type="pack" />
-          ))}
+        <div className="mx-auto w-[90vw] max-w-[1800px]">
+          <BoxesCarousel packs={recommendedPacks} />
         </div>
-        <div className="mt-16 text-center">
-          <Link href={`/${locale}/boxes`}>
-            <Button variant="outline" size="lg" className="px-10 h-14 text-base font-semibold rounded-full border-zinc-300 hover:bg-zinc-50">
-              {tHome("discoverMorePacks")}
-            </Button>
+        <div className="mt-10 text-center">
+          <Link href={`/${locale}/boxes`} className="inline-flex">
+            <FlowButton text={tHome("discoverMorePacks")} />
           </Link>
         </div>
       </section>
 
       {/* Pack Builder Section — same background as the section above, no
           divider, so the page reads as one continuous surface */}
-      <section id="pack-builder" className="py-24 px-6 lg:px-8 max-w-7xl mx-auto w-full mb-10">
-        <div className="text-center mb-16">
+      <section id="pack-builder" className="py-14 md:py-16 px-6 lg:px-8 max-w-7xl mx-auto w-full mb-10">
+        <div className="text-center mb-10">
           <h2 className="text-4xl md:text-5xl font-heading text-zinc-900 mb-4">{tPackBuilder("title")}</h2>
           <p className="text-zinc-500 max-w-xl mx-auto">{tPackBuilder("subtitle")}</p>
         </div>

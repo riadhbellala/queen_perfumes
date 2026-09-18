@@ -15,7 +15,7 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import { CheckCircle2, ShoppingBag, Info, ChevronLeft, ChevronRight, X } from "lucide-react";
+import { Check, CheckCircle2, ShoppingBag, Info, ChevronLeft, ChevronRight, X } from "lucide-react";
 
 // Real product photography for each box size, one per pricing tier.
 const SIZE_IMAGES: Record<number, string> = {
@@ -52,7 +52,7 @@ function StepDot({
     <div className="flex items-center gap-2">
       <div
         className={`flex size-7 shrink-0 items-center justify-center rounded-full text-xs font-semibold transition-colors ${
-          done || active ? "bg-zinc-900 text-white" : "bg-zinc-100 text-zinc-400"
+          done || active ? "bg-primary text-primary-foreground" : "bg-muted text-zinc-400"
         }`}
       >
         {done ? <CheckCircle2 size={14} /> : index}
@@ -66,7 +66,7 @@ function StepProgress({ step, labels }: { step: 1 | 2; labels: [string, string] 
   return (
     <div className="flex items-center justify-center gap-3 mb-10">
       <StepDot index={1} label={labels[0]} active={step === 1} done={step > 1} />
-      <div className={`h-px w-10 transition-colors ${step > 1 ? "bg-zinc-900" : "bg-zinc-200"}`} />
+      <div className={`h-px w-10 transition-colors ${step > 1 ? "bg-primary" : "bg-border"}`} />
       <StepDot index={2} label={labels[1]} active={step === 2} done={false} />
     </div>
   );
@@ -87,12 +87,12 @@ function SelectionProgressBar({
   return (
     <div
       className={`h-1.5 w-full overflow-hidden rounded-full ${
-        tone === "dark" ? "bg-white/15" : "bg-zinc-100"
+        tone === "dark" ? "bg-white/15" : "bg-muted"
       }`}
     >
       <div
         className={`h-full rounded-full transition-[width] duration-300 ease-out ${
-          tone === "dark" ? "bg-white" : "bg-zinc-900"
+          tone === "dark" ? "bg-white" : "bg-primary"
         }`}
         style={{ width: `${pct}%` }}
       />
@@ -128,7 +128,7 @@ function SizeCard({
       onClick={onClick}
       className={`group relative w-full overflow-hidden rounded-3xl text-center transition-all duration-300 active:scale-[0.98] ${
         large ? "aspect-[16/11] sm:aspect-[21/9]" : "aspect-[16/11]"
-      } ${selected ? "ring-2 ring-zinc-900 ring-offset-2 shadow-xl" : "ring-1 ring-zinc-100 hover:shadow-lg"}`}
+      } ${selected ? "ring-2 ring-primary ring-offset-2 shadow-xl" : "ring-1 ring-border hover:shadow-lg"}`}
     >
       {/* eslint-disable-next-line @next/next/no-img-element */}
       <img
@@ -192,16 +192,16 @@ function PerfumePickerCard({
       <button
         onClick={() => !isUnavailable && onToggle()}
         disabled={isDisabledNotSelected || isUnavailable}
-        className={`relative rounded-xl border-2 overflow-hidden text-start w-full transition-all duration-200 group ${
+        className={`group relative w-full overflow-hidden rounded-xl text-start transition-all duration-200 ${
           selected
-            ? "border-zinc-900 shadow-lg ring-2 ring-zinc-900 ring-offset-2"
+            ? "ring-2 ring-primary shadow-lg"
             : isDisabledNotSelected || isUnavailable
-            ? "border-zinc-100 opacity-40 cursor-not-allowed"
-            : "border-zinc-100 hover:border-zinc-300 hover:shadow-md cursor-pointer"
+            ? "ring-1 ring-border opacity-40 cursor-not-allowed"
+            : "ring-1 ring-border hover:shadow-md hover:ring-primary/50 cursor-pointer"
         }`}
       >
         {/* Image */}
-        <div className="aspect-square overflow-hidden bg-zinc-50 relative">
+        <div className="relative aspect-[3/4] overflow-hidden bg-muted">
           {perfume.imageUrl ? (
             <img
               src={perfume.imageUrl}
@@ -214,24 +214,31 @@ function PerfumePickerCard({
             </div>
           )}
 
-          {/* Badge — the border/ring on the card already signals selection,
-              this chip is the only extra cue needed */}
-          {selected && (
-            <div className="absolute top-2 start-2 bg-zinc-900 text-white text-xs font-semibold px-2 py-1 rounded-full">
-              {selectedLabel}
-            </div>
-          )}
-          {isUnavailable && (
-            <div className="absolute top-2 start-2 bg-red-100 text-red-700 text-xs font-semibold px-2 py-1 rounded-full">
+          {selected && <div className="absolute inset-0 bg-primary/10" />}
+
+          {/* Out-of-stock always wins over the selected badge — the two
+              can't coexist in practice, but keeping an explicit priority
+              avoids ever stacking both. */}
+          {isUnavailable ? (
+            <span className="absolute start-2 top-2 z-10 rounded-full bg-red-950/85 px-2.5 py-1 text-[10px] font-semibold tracking-wide text-white shadow-sm">
               {outOfStockLabel}
-            </div>
+            </span>
+          ) : (
+            selected && (
+              <span className="absolute start-2 top-2 z-10 grid size-6 place-items-center rounded-full bg-primary text-primary-foreground shadow-md">
+                <Check size={12} strokeWidth={3} />
+                <span className="sr-only">{selectedLabel}</span>
+              </span>
+            )
           )}
         </div>
 
-        {/* Info */}
+        {/* Caption */}
         <div className="p-3">
-          <p className="font-medium text-zinc-900 text-sm leading-tight">{perfume.name[locale]}</p>
-          <p className="text-xs text-zinc-400 mt-0.5">{perfume.scentFamily} · {perfume.concentration}</p>
+          <p className="font-display text-sm font-semibold leading-tight text-foreground">{perfume.name[locale]}</p>
+          <p className="mt-0.5 text-[11px] uppercase tracking-wide text-zinc-400">
+            {perfume.scentFamily} · {perfume.concentration}
+          </p>
         </div>
       </button>
 
@@ -239,10 +246,10 @@ function PerfumePickerCard({
       <Dialog>
         <DialogTrigger
           render={
-            <button className="absolute top-2 end-2 bg-white/90 text-zinc-500 hover:text-zinc-900 hover:bg-white p-1.5 rounded-full shadow-sm transition-colors focus:outline-none z-10" />
+            <button className="absolute end-2 top-2 z-10 rounded-full bg-white/80 p-1.5 text-zinc-600 shadow-sm ring-1 ring-black/5 backdrop-blur-md transition-colors hover:bg-white hover:text-zinc-900 focus:outline-none" />
           }
         >
-          <Info size={18} />
+          <Info size={15} />
         </DialogTrigger>
         <DialogContent className="sm:max-w-md rounded-3xl">
           <DialogHeader>
@@ -257,10 +264,10 @@ function PerfumePickerCard({
               />
             )}
             <div className="flex items-center gap-3 mb-4">
-              <span className="bg-zinc-100 text-zinc-600 px-3 py-1 rounded-full text-xs font-semibold tracking-wide">
+              <span className="bg-muted text-zinc-600 px-3 py-1 rounded-full text-xs font-semibold tracking-wide">
                 {perfume.scentFamily}
               </span>
-              <span className="bg-zinc-100 text-zinc-600 px-3 py-1 rounded-full text-xs font-semibold tracking-wide">
+              <span className="bg-muted text-zinc-600 px-3 py-1 rounded-full text-xs font-semibold tracking-wide">
                 {perfume.concentration}
               </span>
             </div>
@@ -277,7 +284,7 @@ function PerfumePickerCard({
               }}
               disabled={isUnavailable || (isDisabledNotSelected && !selected)}
               size="lg"
-              className={`w-full h-12 rounded-full font-semibold ${selected ? "bg-red-50 text-red-600 hover:bg-red-100" : "bg-zinc-900 text-white hover:bg-zinc-800"}`}
+              className={`w-full h-12 rounded-full font-semibold ${selected ? "bg-red-50 text-red-600 hover:bg-red-100" : "bg-primary text-primary-foreground hover:bg-primary/90"}`}
             >
               {selected
                 ? (locale === "fr" ? "Retirer de la box" : "أزل من المجموعة")
@@ -358,7 +365,7 @@ export function CreezVotreBoxBuilder({
 
   return (
     <div className="pb-36">
-      <div className="max-w-7xl mx-auto w-full px-6 lg:px-8 pb-12">
+      <div className="max-w-7xl mx-auto w-full px-6 lg:px-8 pt-10 pb-12 md:pt-12">
 
         <StepProgress
           step={step}
@@ -419,7 +426,7 @@ export function CreezVotreBoxBuilder({
 
             {/* Unified size-and-selection panel — one card instead of two
                 near-identical ones stacked on top of each other */}
-            <div className="mb-8 rounded-2xl border border-zinc-100 bg-white p-5 md:p-6 max-w-3xl mx-auto shadow-sm">
+            <div className="mb-8 rounded-2xl border border-border bg-card p-5 md:p-6 max-w-3xl mx-auto shadow-sm">
               <div className="flex items-center justify-between">
                 <button
                   onClick={handleChangeSize}
@@ -446,7 +453,7 @@ export function CreezVotreBoxBuilder({
               {/* Where each chosen perfume "lands"; always visible so the
                   empty state guides the next action instead of the section
                   just being absent */}
-              <div className="mt-5 pt-5 border-t border-zinc-100">
+              <div className="mt-5 pt-5 border-t border-border">
                 <p className="text-sm font-semibold text-zinc-900 mb-3">
                   {locale === "fr" ? "Votre sélection" : "اختيارك"}
                 </p>
@@ -458,11 +465,11 @@ export function CreezVotreBoxBuilder({
                           type="button"
                           onClick={() => togglePerfume(perfume!.id)}
                           aria-label={locale === "fr" ? "Retirer" : "إزالة"}
-                          className="absolute -top-1.5 -end-1.5 z-10 flex size-5 items-center justify-center rounded-full bg-zinc-900 text-white shadow ring-2 ring-white transition-transform duration-150 ease-out active:scale-90"
+                          className="absolute -top-1.5 -end-1.5 z-10 flex size-5 items-center justify-center rounded-full bg-primary text-primary-foreground shadow ring-2 ring-white transition-transform duration-150 ease-out active:scale-90"
                         >
                           <X size={11} />
                         </button>
-                        <div className="size-16 overflow-hidden rounded-xl bg-zinc-50 ring-1 ring-zinc-200">
+                        <div className="size-16 overflow-hidden rounded-xl bg-muted ring-1 ring-border">
                           {perfume!.imageUrl && (
                             // eslint-disable-next-line @next/next/no-img-element
                             <img
@@ -509,7 +516,7 @@ export function CreezVotreBoxBuilder({
       {/* Sticky bottom bar */}
       {step === 2 && (
         <div className="fixed bottom-6 left-1/2 -translate-x-1/2 w-full max-w-2xl px-4 z-50 animate-in fade-in slide-in-from-bottom-4 duration-300">
-          <div className="bg-zinc-900 text-white p-2 rounded-full shadow-2xl flex items-center justify-between border border-white/10">
+          <div className="bg-primary text-primary-foreground p-2 rounded-full shadow-2xl flex items-center justify-between border border-white/10">
             <div className="flex items-center gap-3 ps-6 py-2 min-w-0">
               <div className="min-w-0">
                 <p className="font-semibold text-base truncate">
@@ -517,7 +524,7 @@ export function CreezVotreBoxBuilder({
                   {locale === "fr" ? "parfums" : "عطور"}
                 </p>
                 {selectedSizePricing && (
-                  <Price amount={selectedSizePricing.price} className="text-sm text-zinc-400" />
+                  <Price amount={selectedSizePricing.price} className="text-sm text-primary-foreground/70" />
                 )}
               </div>
             </div>

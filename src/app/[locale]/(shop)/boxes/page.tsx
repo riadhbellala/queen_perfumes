@@ -2,7 +2,6 @@ import { getTranslations } from "next-intl/server";
 import { createClient } from "@/lib/supabase/server";
 import { mapPackRow } from "@/lib/supabase/mappers";
 import { BoxesBrowser } from "@/components/shop/boxes-browser";
-import { HandWrittenTitle } from "@/components/ui/hand-writing-text";
 
 export default async function BoxesPage({
   params,
@@ -13,23 +12,16 @@ export default async function BoxesPage({
   const t = await getTranslations("Packs");
 
   const supabase = await createClient();
-  const [{ data: packRows }, { data: perfumeRows }, { data: pricingRows }] = await Promise.all([
+  const [{ data: packRows }, { data: pricingRows }] = await Promise.all([
     supabase
       .from("packs")
-      .select("*, pack_perfumes(perfume_id)")
+      .select("*")
       .eq("is_active", true)
       .order("created_at", { ascending: true }),
-    supabase.from("perfumes").select("id, image_url"),
     supabase.from("pack_size_pricing").select("price"),
   ]);
 
-  const packs = (packRows ?? []).map((row) =>
-    mapPackRow(row, (row.pack_perfumes ?? []).map((pp: { perfume_id: string }) => pp.perfume_id))
-  );
-  const perfumeImages: Record<string, string | undefined> = {};
-  for (const row of perfumeRows ?? []) {
-    perfumeImages[row.id] = row.image_url ?? undefined;
-  }
+  const packs = (packRows ?? []).map((row) => mapPackRow(row));
   // Drives the CTA banner's "starting at X DA" line — was previously a
   // hardcoded "1 900 DA" string, disconnected from pack_size_pricing.
   const minPrice = (pricingRows ?? []).reduce(
@@ -39,22 +31,24 @@ export default async function BoxesPage({
   const startingPrice = Number.isFinite(minPrice) ? minPrice : null;
 
   return (
-    <div className="bg-white min-h-screen">
-      {/* ── Header — same hand-written title component as /creez-votre-box ── */}
-      <div className="border-b border-zinc-100 bg-zinc-50/60">
-        <div className="max-w-7xl mx-auto w-full px-6 lg:px-8">
-          <HandWrittenTitle
-            title={t("title")}
-            subtitle={
-              locale === "fr"
-                ? "Nos boxes ont été soigneusement composées pour vous offrir une expérience parfumée inoubliable."
-                : "تم تصميم مجموعاتنا بعناية لتقديم تجربة عطرية لا تُنسى."
-            }
-          />
+    <div className="bg-background min-h-screen">
+      {/* ── Hero — real product photo, dark overlay for legible white text ── */}
+      <div className="relative flex min-h-[38vh] w-full items-center justify-center overflow-hidden bg-[url('/assets/herosection/boxes-hero.webp')] bg-cover bg-center px-6 py-16 md:min-h-[48vh]">
+        <div className="absolute inset-0 bg-black/45" />
+        <div className="relative z-10 max-w-2xl text-center">
+          <h1 className="font-display text-5xl tracking-tight text-white drop-shadow-md md:text-6xl">
+            {t("title")}
+          </h1>
+          <div className="mx-auto mt-5 h-px w-14 bg-white/40" />
+          <p className="mt-5 text-base text-white/85 md:text-lg">
+            {locale === "fr"
+              ? "Nos boxes ont été soigneusement composées pour vous offrir une expérience parfumée inoubliable."
+              : "تم تصميم مجموعاتنا بعناية لتقديم تجربة عطرية لا تُنسى."}
+          </p>
         </div>
       </div>
 
-      <BoxesBrowser packs={packs} perfumeImages={perfumeImages} startingPrice={startingPrice} />
+      <BoxesBrowser packs={packs} startingPrice={startingPrice} />
     </div>
   );
 }

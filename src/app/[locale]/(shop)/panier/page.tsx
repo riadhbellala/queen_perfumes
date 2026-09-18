@@ -24,13 +24,13 @@ export default function PanierPage() {
   const tPanier = useTranslations("Panier");
 
   if (!isHydrated) {
-    return <div className="min-h-screen bg-zinc-50/50" />;
+    return <div className="min-h-screen bg-background" />;
   }
 
   if (items.length === 0) {
     return (
       <div className="min-h-[60vh] flex flex-col items-center justify-center gap-6 px-6 text-center">
-        <div className="w-16 h-16 rounded-full bg-zinc-100 flex items-center justify-center text-zinc-400">
+        <div className="w-16 h-16 rounded-full bg-muted flex items-center justify-center text-zinc-400">
           <PackageOpen size={28} />
         </div>
         <div>
@@ -56,8 +56,8 @@ export default function PanierPage() {
   }
 
   return (
-    <div className="bg-zinc-50/50 min-h-screen pb-24">
-      <div className="bg-white border-b border-zinc-100">
+    <div className="bg-background min-h-screen pb-24">
+      <div className="bg-background border-b border-border">
         <div className="max-w-5xl mx-auto w-full px-6 lg:px-8 py-10 flex items-center justify-between flex-wrap gap-4">
           <h1 className="text-4xl md:text-5xl font-heading font-medium tracking-tight text-zinc-900">
             {tPanier("title")}
@@ -79,10 +79,10 @@ export default function PanierPage() {
             return (
               <div
                 key={item.cartLineId}
-                className="flex flex-wrap items-center gap-4 bg-white rounded-2xl border border-zinc-200 p-4"
+                className="flex flex-wrap items-center gap-4 bg-card rounded-2xl border border-border p-4"
               >
                 <div className="flex min-w-[180px] flex-1 items-center gap-4">
-                  <div className="size-16 shrink-0 overflow-hidden rounded-xl bg-zinc-50">
+                  <div className="size-16 shrink-0 overflow-hidden rounded-xl bg-muted">
                     {lineImage(item) ? (
                       // eslint-disable-next-line @next/next/no-img-element
                       <img src={lineImage(item)} alt={title} className="h-full w-full object-cover" />
@@ -100,12 +100,12 @@ export default function PanierPage() {
                 </div>
 
                 <div className="ms-auto flex shrink-0 items-center gap-3 sm:gap-4">
-                  <div className="flex items-center gap-2 border border-zinc-200 rounded-full px-1 py-1">
+                  <div className="flex items-center gap-2 border border-border rounded-full px-1 py-1">
                     <button
                       type="button"
                       onClick={() => updateQuantity(item.cartLineId, item.quantity - 1)}
                       disabled={item.quantity <= 1}
-                      className="size-7 flex items-center justify-center rounded-full text-zinc-500 hover:bg-zinc-100 disabled:opacity-30 transition-colors"
+                      className="size-7 flex items-center justify-center rounded-full text-zinc-500 hover:bg-muted disabled:opacity-30 transition-colors"
                       aria-label="-"
                     >
                       <Minus size={14} />
@@ -114,7 +114,7 @@ export default function PanierPage() {
                     <button
                       type="button"
                       onClick={() => updateQuantity(item.cartLineId, item.quantity + 1)}
-                      className="size-7 flex items-center justify-center rounded-full text-zinc-500 hover:bg-zinc-100 transition-colors"
+                      className="size-7 flex items-center justify-center rounded-full text-zinc-500 hover:bg-muted transition-colors"
                       aria-label="+"
                     >
                       <Plus size={14} />
@@ -140,13 +140,13 @@ export default function PanierPage() {
           })}
         </div>
 
-        <div className="lg:col-span-4 bg-white rounded-3xl border border-zinc-200 shadow-sm p-6 sticky top-24">
+        <div className="lg:col-span-4 bg-card rounded-3xl border border-border shadow-sm p-6 sticky top-24">
           <div className="flex items-center justify-between mb-4">
             <span className="text-zinc-500">{t("Checkout.subtotal")}</span>
             <Price amount={subtotal} className="font-semibold text-zinc-900" />
           </div>
           <Link href={`/${locale}/commande`}>
-            <Button size="lg" className="w-full h-14 rounded-full font-semibold text-lg bg-zinc-900 text-white hover:bg-zinc-800">
+            <Button size="lg" className="w-full h-14 rounded-full font-semibold text-lg">
               {tPanier("checkoutCta")}
             </Button>
           </Link>
