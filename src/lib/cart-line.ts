@@ -23,3 +23,39 @@ export function toCartPerfumeSummary(perfume: Perfume): CartPerfumeSummary {
     concentration: perfume.concentration,
   };
 }
+
+// The shape place_order()'s p_items jsonb parameter expects — see the
+// "Supabase Schema Reference" section of CLAUDE.md. Only the fields
+// relevant to that line's item_type are populated.
+export type OrderItemPayload = {
+  item_type: CartItem["type"];
+  perfume_id?: string;
+  pack_id?: string;
+  custom_pack_size?: number;
+  custom_pack_perfume_ids?: string[];
+  quantity: number;
+  unit_price: number;
+  line_total: number;
+};
+
+export function toOrderItemPayload(item: CartItem): OrderItemPayload {
+  const unitPrice = lineUnitPrice(item);
+  const base = {
+    quantity: item.quantity,
+    unit_price: unitPrice,
+    line_total: unitPrice * item.quantity,
+  };
+
+  if (item.type === "perfume") {
+    return { item_type: "perfume", perfume_id: item.perfumeId, ...base };
+  }
+  if (item.type === "pack") {
+    return { item_type: "pack", pack_id: item.packId, ...base };
+  }
+  return {
+    item_type: "custom_pack",
+    custom_pack_size: item.size,
+    custom_pack_perfume_ids: item.selectedPerfumeIds,
+    ...base,
+  };
+}

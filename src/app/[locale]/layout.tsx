@@ -29,10 +29,22 @@ const cairo = Cairo({
   weight: ["400", "500", "600", "700"],
 });
 
-export const metadata: Metadata = {
-  title: "The Queen of Perfumes",
-  description: "Parfums pour femme — collections et boxes sélectionnées",
-};
+// Static `export const metadata` here would render the same French
+// title/description for the Arabic locale too — this must be per-locale.
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ locale: string }>;
+}): Promise<Metadata> {
+  const { locale } = await params;
+  return {
+    title: "The Queen of Perfumes",
+    description:
+      locale === "ar"
+        ? "عطور نسائية فاخرة — تشكيلات ومجموعات مختارة بعناية."
+        : "Parfums pour femme — collections et boxes soigneusement sélectionnées.",
+  };
+}
 
 export default async function RootLayout({
   children,

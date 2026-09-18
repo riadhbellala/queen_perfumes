@@ -79,16 +79,9 @@ export const WILAYAS: Wilaya[] = [
   { code: 69, name: { fr: "El Abiodh Sidi Cheikh", ar: "الأبيض سيدي الشيخ" } },
 ];
 
-// Estimated flat delivery fees by zone, standing in until real carrier rates
-// (Yalidine/ZR Express) are wired up — see CLAUDE.md progress log.
-const CENTRAL_WILAYA_CODES = new Set([9, 16, 35, 42]); // Blida, Alger, Boumerdès, Tipaza
-const REMOTE_WILAYA_CODES = new Set([1, 11, 33, 37, 49, 50, 52, 53, 54, 56]); // Adrar, Tamanrasset, Illizi, Tindouf, Timimoun, Bordj Badji Mokhtar, Béni Abbès, In Salah, In Guezzam, Djanet
-
 export type DeliveryType = "home" | "office";
 
-export function getDeliveryFee(wilayaCode: number, deliveryType: DeliveryType = "home"): number {
-  const base = CENTRAL_WILAYA_CODES.has(wilayaCode) ? 400 : REMOTE_WILAYA_CODES.has(wilayaCode) ? 900 : 600;
-  // Office/stopdesk pickup skips home drop-off, so it's cheaper — matches how
-  // Algerian carriers (Yalidine, ZR Express) typically price the two options.
-  return deliveryType === "office" ? Math.max(200, base - 200) : base;
-}
+// Real per-wilaya fees now live in the `wilaya_delivery_fees` table, fetched
+// directly by src/components/shop/delivery-form.tsx, and managed at
+// /admin/livraison — this used to be a hardcoded zone-based estimate here,
+// replaced entirely.

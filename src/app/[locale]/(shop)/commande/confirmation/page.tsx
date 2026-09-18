@@ -8,7 +8,7 @@ import { Price } from "@/components/shop/price";
 import { CheckCircle2 } from "lucide-react";
 
 type LastOrder = {
-  orderRef: string;
+  orderId: string;
   fullName: string;
   itemCount: number;
   total: number;
@@ -48,9 +48,11 @@ export default function CommandeConfirmationPage() {
 
         {order && (
           <div className="bg-zinc-50 rounded-2xl p-6 mb-8 text-start">
-            <div className="flex items-center justify-between py-2 border-b border-zinc-100">
-              <span className="text-sm text-zinc-500">{t("orderRef")}</span>
-              <span className="font-mono font-semibold text-zinc-900">{order.orderRef}</span>
+            <div className="flex items-center justify-between py-2 border-b border-zinc-100 gap-4">
+              <span className="text-sm text-zinc-500 shrink-0">{t("orderRef")}</span>
+              <bdi dir="ltr" className="font-mono text-sm font-semibold text-zinc-900 truncate">
+                {order.orderId}
+              </bdi>
             </div>
             <div className="flex items-center justify-between py-2 border-b border-zinc-100">
               <span className="text-sm text-zinc-500">{t("itemsCount", { count: order.itemCount })}</span>

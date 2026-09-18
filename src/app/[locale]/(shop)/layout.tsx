@@ -7,6 +7,9 @@ import { useLocale, useTranslations } from "next-intl";
 import { LocaleSwitcher } from "@/components/shop/locale-switcher";
 import { CartProvider, useCart } from "@/context/CartContext";
 import { InstagramIcon, TikTokIcon } from "@/components/shop/social-icons";
+import { WhatsAppIcon } from "@/components/shop/whatsapp-icon";
+import { WhatsAppButton } from "@/components/shop/whatsapp-button";
+import { getWhatsAppUrl } from "@/lib/whatsapp";
 import { Menu, X, ShoppingBag } from "lucide-react";
 
 function CartLink({ onClick }: { onClick?: () => void }) {
@@ -78,6 +81,7 @@ export default function ShopLayout({ children }: { children: React.ReactNode }) 
   const isRtl = locale === "ar";
   const tNav = useTranslations("Navigation");
   const tFooter = useTranslations("Footer");
+  const tWhatsapp = useTranslations("Whatsapp");
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
 
   // Close drawer on route change
@@ -217,6 +221,16 @@ export default function ShopLayout({ children }: { children: React.ReactNode }) 
             </Link>
           </nav>
 
+          <a
+            href={getWhatsAppUrl(tWhatsapp("message"))}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex items-center gap-2 rounded-full border border-zinc-200 px-5 py-2.5 text-sm font-medium text-zinc-600 transition-colors hover:bg-[#25D366] hover:text-white hover:border-[#25D366]"
+          >
+            <WhatsAppIcon className="size-4" />
+            {tWhatsapp("cta")}
+          </a>
+
           <div className="flex items-center gap-3">
             <a
               href="#"
@@ -235,11 +249,21 @@ export default function ShopLayout({ children }: { children: React.ReactNode }) 
           </div>
 
           <div className="h-px w-16 bg-zinc-100" />
-          <p className="text-xs text-zinc-400 tracking-wide">
-            {tFooter("text", { year: new Date().getFullYear() })}
-          </p>
+          <div className="flex flex-col items-center gap-2">
+            <p className="text-xs text-zinc-400 tracking-wide">
+              {tFooter("text", { year: new Date().getFullYear() })}
+            </p>
+            <Link
+              href="/admin/login"
+              className="text-xs text-zinc-300 tracking-wide transition-colors hover:text-zinc-500"
+            >
+              {tFooter("adminLogin")}
+            </Link>
+          </div>
         </div>
       </footer>
+
+      <WhatsAppButton />
     </div>
     </CartProvider>
   );

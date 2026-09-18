@@ -10,9 +10,14 @@ import type { Pack } from "@/types";
 export function BoxesBrowser({
   packs,
   perfumeImages,
+  startingPrice,
 }: {
   packs: Pack[];
   perfumeImages: Record<string, string | undefined>;
+  /** Lowest pack_size_pricing.price, for the CTA banner's "starting at" line
+      — null if pricing couldn't be loaded, in which case that line is
+      dropped rather than showing a stale or fabricated number. */
+  startingPrice: number | null;
 }) {
   const locale = useLocale() as "fr" | "ar";
   const [sortBy, setSortBy] = useState<string>("featured");
@@ -127,9 +132,27 @@ export function BoxesBrowser({
             {locale === "fr" ? "Vous ne trouvez pas votre bonheur ?" : "لا تجدين ما تريدين؟"}
           </h2>
           <p className="text-zinc-500 max-w-lg mx-auto mb-8 text-base">
-            {locale === "fr"
-              ? "Composez votre propre box sur mesure. De 2 à 6 parfums, à partir de 1 900 DA."
-              : "أنشئي مجموعتك المخصصة. من 2 إلى 6 عطور، بدءاً من 1 900 دج."}
+            {locale === "fr" ? (
+              <>
+                Composez votre propre box sur mesure. De 2 à 6 parfums
+                {startingPrice !== null && (
+                  <>
+                    , à partir de <Price amount={startingPrice} className="font-semibold text-zinc-700" />
+                  </>
+                )}
+                .
+              </>
+            ) : (
+              <>
+                أنشئي مجموعتك المخصصة. من 2 إلى 6 عطور
+                {startingPrice !== null && (
+                  <>
+                    ، بدءاً من <Price amount={startingPrice} className="font-semibold text-zinc-700" />
+                  </>
+                )}
+                .
+              </>
+            )}
           </p>
           <Link href={`/${locale}/creez-votre-box`}>
             <Button

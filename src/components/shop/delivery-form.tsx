@@ -1,14 +1,16 @@
 "use client";
 
-import React, { useMemo } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useRouter } from "next/navigation";
 import { useLocale, useTranslations } from "next-intl";
 import { useCart } from "@/context/CartContext";
+import { createClient } from "@/lib/supabase/client";
+import { toOrderItemPayload } from "@/lib/cart-line";
 import { Price } from "@/components/shop/price";
 import { createDeliveryFormSchema, DeliveryFormValues } from "@/lib/validations/order";
-import { WILAYAS, getDeliveryFee, type DeliveryType } from "@/lib/wilayas";
+import { WILAYAS, type DeliveryType } from "@/lib/wilayas";
 import { COMMUNES_BY_WILAYA } from "@/lib/communes";
 import { Field, FieldError, FieldGroup, FieldLabel } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
@@ -21,14 +23,9 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
-import { ShieldCheck } from "lucide-react";
+import { ShieldCheck, AlertCircle } from "lucide-react";
 
 type Locale = "fr" | "ar";
-
-function generateOrderRef(): string {
-  const random = Math.random().toString(36).slice(2, 7).toUpperCase();
-  return `TQP-${random}`;
-}
 
 const inputClassName =
   "h-12 rounded-xl bg-zinc-50 border-zinc-200 focus:bg-white focus-visible:ring-zinc-900";
@@ -38,6 +35,26 @@ export function DeliveryForm() {
   const router = useRouter();
   const locale = useLocale() as Locale;
   const t = useTranslations("Checkout");
+  const [submitError, setSubmitError] = useState<string | null>(null);
+  const [feesByWilaya, setFeesByWilaya] = useState<Record<string, number> | null>(null);
+
+  // Fetched once on mount (69 tiny rows) rather than re-fetched on every
+  // wilaya change — the fee then updates instantly as a synchronous lookup
+  // instead of round-tripping to the DB on each selection.
+  useEffect(() => {
+    let cancelled = false;
+    const supabase = createClient();
+    supabase
+      .from("wilaya_delivery_fees")
+      .select("wilaya, fee")
+      .then(({ data, error }) => {
+        if (cancelled || error || !data) return;
+        setFeesByWilaya(Object.fromEntries(data.map((row) => [row.wilaya, Number(row.fee)])));
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, []);
 
   const schema = useMemo(
     () =>
@@ -75,7 +92,16 @@ export function DeliveryForm() {
   const commune = watch("commune");
   const deliveryType = watch("deliveryType");
   const communeOptions = wilaya ? COMMUNES_BY_WILAYA[Number(wilaya)] ?? [] : [];
-  const deliveryFee = wilaya ? getDeliveryFee(Number(wilaya), deliveryType) : null;
+  const selectedWilayaObj = wilaya ? WILAYAS.find((w) => String(w.code) === wilaya) : undefined;
+  const rawFee =
+    selectedWilayaObj && feesByWilaya ? feesByWilaya[selectedWilayaObj.name.fr] : undefined;
+  // A missing row and an explicit 0 are treated identically as "not
+  // configured for this wilaya" — deliberately. A silent 0 here is exactly
+  // what caused the earlier delivery-fee confusion (66 of 69 wilayas were
+  // unset and silently charged nothing), so it's surfaced and blocks
+  // checkout instead of ever being charged again.
+  const isFeeUnavailable = !!selectedWilayaObj && !!feesByWilaya && (rawFee === undefined || rawFee === 0);
+  const deliveryFee = isFeeUnavailable ? null : rawFee ?? null;
   const total = subtotal + (deliveryFee ?? 0);
 
   function handleWilayaChange(value: string) {
@@ -84,28 +110,72 @@ export function DeliveryForm() {
     setValue("commune", "", { shouldValidate: false });
   }
 
-  function onSubmit(values: DeliveryFormValues) {
-    const orderRef = generateOrderRef();
-    const itemCount = items.reduce((sum, i) => sum + i.quantity, 0);
-    const fee = getDeliveryFee(Number(values.wilaya), values.deliveryType);
+  async function onSubmit(values: DeliveryFormValues) {
+    setSubmitError(null);
 
-    try {
-      sessionStorage.setItem(
-        "tqp_last_order",
-        JSON.stringify({
-          orderRef,
-          fullName: values.fullName,
-          itemCount,
-          total: subtotal + fee,
-          createdAt: Date.now(),
-        })
-      );
-    } catch {
-      // sessionStorage unavailable — confirmation page will fall back to a generic message
+    const itemCount = items.reduce((sum, i) => sum + i.quantity, 0);
+
+    // orders/place_order() have no dedicated commune or delivery-type columns,
+    // so fold them into the address/note text instead of dropping them.
+    const wilayaObj = WILAYAS.find((w) => String(w.code) === values.wilaya);
+    const fee = wilayaObj && feesByWilaya ? feesByWilaya[wilayaObj.name.fr] : undefined;
+
+    // Belt-and-suspenders: the submit button is already disabled in this
+    // state, but never let an order through with an unset/zero fee even if
+    // that state is somehow stale by the time this fires.
+    if (!wilayaObj || fee === undefined || fee === 0) {
+      setSubmitError(t("deliveryFeeUnavailableMessage"));
+      return;
     }
 
-    clearCart();
-    router.push(`/${locale}/commande/confirmation`);
+    const total = subtotal + fee;
+    const wilayaLabel = wilayaObj
+      ? `${String(wilayaObj.code).padStart(2, "0")} - ${wilayaObj.name.fr}`
+      : values.wilaya;
+    const communeObj = communeOptions.find((c) => c.fr === values.commune);
+    const communeLabel = communeObj?.fr ?? values.commune;
+    const deliveryTypeLabel = values.deliveryType === "home" ? "Domicile" : "Bureau/Stopdesk";
+    const fullAddress = `${values.address}, ${communeLabel}`;
+    const fullNote = [`Livraison: ${deliveryTypeLabel}`, values.note].filter(Boolean).join(" — ");
+
+    try {
+      const supabase = createClient();
+      const { data: orderId, error } = await supabase.rpc("place_order", {
+        p_customer_name: values.fullName,
+        p_phone: values.phone,
+        p_wilaya: wilayaLabel,
+        p_address: fullAddress,
+        p_note: fullNote,
+        p_subtotal: subtotal,
+        p_delivery_fee: fee,
+        p_total: total,
+        p_items: items.map(toOrderItemPayload),
+      });
+
+      if (error) throw error;
+
+      try {
+        sessionStorage.setItem(
+          "tqp_last_order",
+          JSON.stringify({
+            orderId,
+            fullName: values.fullName,
+            itemCount,
+            total,
+            createdAt: Date.now(),
+          })
+        );
+      } catch {
+        // sessionStorage unavailable — confirmation page will fall back to a generic message
+      }
+
+      clearCart();
+      router.push(`/${locale}/commande/confirmation`);
+    } catch (err) {
+      console.error("place_order failed:", err);
+      const message = err instanceof Error ? err.message : String(err);
+      setSubmitError(message.includes("INSUFFICIENT_STOCK") ? t("orderErrorStock") : t("orderErrorGeneric"));
+    }
   }
 
   return (
@@ -240,8 +310,12 @@ export function DeliveryForm() {
           <span>{t("deliveryFeeLabel")}</span>
           {deliveryFee !== null ? (
             <Price amount={deliveryFee} className="font-medium text-zinc-900" />
+          ) : isFeeUnavailable ? (
+            <span className="text-xs font-medium text-red-600">{t("deliveryFeeUnavailable")}</span>
+          ) : wilaya && !feesByWilaya ? (
+            <span className="text-xs italic">{t("deliveryFeeLoading")}</span>
           ) : (
-            <span className="text-xs italic">{t("deliveryFeeNote")}</span>
+            <span className="text-zinc-300">—</span>
           )}
         </div>
         <div className="mt-4 flex items-center justify-between border-t border-zinc-100 pt-4">
@@ -250,13 +324,27 @@ export function DeliveryForm() {
         </div>
       </div>
 
+      {isFeeUnavailable && (
+        <div className="flex items-start gap-3 rounded-2xl border border-red-200 bg-red-50 p-4 text-start">
+          <AlertCircle className="mt-0.5 shrink-0 text-red-600" size={20} />
+          <p className="text-sm text-red-700">{t("deliveryFeeUnavailableMessage")}</p>
+        </div>
+      )}
+
+      {submitError && (
+        <div className="flex items-start gap-3 rounded-2xl border border-red-200 bg-red-50 p-4 text-start">
+          <AlertCircle className="mt-0.5 shrink-0 text-red-600" size={20} />
+          <p className="text-sm text-red-700">{submitError}</p>
+        </div>
+      )}
+
       <Button
         type="submit"
         size="lg"
-        disabled={isSubmitting}
-        className="h-14 w-full rounded-full text-lg font-semibold bg-zinc-900 text-white hover:bg-zinc-800 shadow-xl transition-all duration-300 hover:scale-[1.01]"
+        disabled={isSubmitting || isFeeUnavailable}
+        className="h-14 w-full rounded-full text-lg font-semibold bg-zinc-900 text-white hover:bg-zinc-800 shadow-xl transition-all duration-300 hover:scale-[1.01] disabled:opacity-60"
       >
-        {t("placeOrder")}
+        {isSubmitting ? t("placingOrder") : t("placeOrder")}
       </Button>
     </form>
   );

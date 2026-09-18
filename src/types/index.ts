@@ -10,7 +10,8 @@ export type Perfume = {
   price?: number;
   imageUrl?: string;
   scentFamily: string;
-  concentration: "EDT" | "EDP" | "Parfum";
+  // The DB's check constraint (perfumes_concentration_check) allows all four.
+  concentration: "EDT" | "EDP" | "Parfum" | "Extrait";
   inStock: boolean;
 };
 
@@ -49,7 +50,7 @@ export type CartPerfumeSummary = {
   description: LocalizedString;
   imageUrl?: string;
   scentFamily: string;
-  concentration: "EDT" | "EDP" | "Parfum";
+  concentration: "EDT" | "EDP" | "Parfum" | "Extrait";
 };
 
 export type CartItemPerfume = {

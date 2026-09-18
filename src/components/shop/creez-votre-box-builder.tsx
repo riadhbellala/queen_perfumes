@@ -109,6 +109,7 @@ function SizeCard({
   selected,
   onClick,
   perfumesLabel,
+  tagline,
   imageSrc,
   large,
 }: {
@@ -117,16 +118,16 @@ function SizeCard({
   selected: boolean;
   onClick: () => void;
   perfumesLabel: string;
+  tagline: string;
   imageSrc: string;
   /** The 6-perfume tier gets a bigger, full-width showcase treatment */
   large?: boolean;
 }) {
-  const perUnit = Math.round(price / size);
   return (
     <button
       onClick={onClick}
-      className={`group relative w-full overflow-hidden rounded-3xl text-start transition-all duration-300 active:scale-[0.98] ${
-        large ? "aspect-[21/9]" : "aspect-[16/11]"
+      className={`group relative w-full overflow-hidden rounded-3xl text-center transition-all duration-300 active:scale-[0.98] ${
+        large ? "aspect-[16/11] sm:aspect-[21/9]" : "aspect-[16/11]"
       } ${selected ? "ring-2 ring-zinc-900 ring-offset-2 shadow-xl" : "ring-1 ring-zinc-100 hover:shadow-lg"}`}
     >
       {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -135,25 +136,31 @@ function SizeCard({
         alt={`${size} ${perfumesLabel}`}
         className="absolute inset-0 h-full w-full object-cover transition-transform duration-500 ease-out group-hover:scale-110"
       />
-      {/* Scrim so the white caption stays readable over any photo */}
-      <div className="absolute inset-0 bg-gradient-to-t from-black/75 via-black/10 to-transparent transition-opacity duration-300 group-hover:from-black/80" />
+      {/* Even darkening (not a bottom-only gradient) so the caption stays
+          readable centered anywhere on the photo, not just near an edge */}
+      <div className="absolute inset-0 bg-black/50 transition-colors duration-300 group-hover:bg-black/60" />
 
       {selected && (
-        <div className={`absolute top-4 end-4 flex items-center justify-center rounded-full bg-white shadow-md ${large ? "size-9" : "size-8"}`}>
-          <CheckCircle2 size={large ? 20 : 18} className="text-zinc-900" />
+        <div className={`absolute top-4 end-4 flex items-center justify-center rounded-full bg-white shadow-md ${large ? "size-8 sm:size-9" : "size-8"}`}>
+          <CheckCircle2 size={18} className="text-zinc-900" />
         </div>
       )}
 
-      <div className={large ? "absolute inset-x-0 bottom-0 p-6 md:p-8" : "absolute inset-x-0 bottom-0 p-5 md:p-6"}>
-        <p className={`font-heading font-semibold text-white drop-shadow-sm ${large ? "text-3xl md:text-4xl" : "text-2xl md:text-3xl"}`}>
+      <div className="absolute inset-0 flex flex-col items-center justify-center px-5">
+        <p
+          className={`font-heading font-bold text-white [text-shadow:0_2px_12px_rgba(0,0,0,0.55)] ${
+            large ? "text-3xl sm:text-4xl md:text-5xl" : "text-3xl md:text-4xl"
+          }`}
+        >
           <bdi dir="ltr">{size}</bdi> {perfumesLabel}
         </p>
-        <div className="mt-1.5 flex items-center gap-2">
-          <Price amount={price} className={`font-semibold text-white ${large ? "text-xl" : "text-lg"}`} />
-          <span className="text-sm text-white/70">
-            ≈ <Price amount={perUnit} className="text-sm text-white/70" /> / u.
-          </span>
-        </div>
+        <p className={`mt-2 font-medium text-white/90 [text-shadow:0_1px_8px_rgba(0,0,0,0.5)] ${large ? "text-base sm:text-lg" : "text-base"}`}>
+          {tagline}
+        </p>
+        <Price
+          amount={price}
+          className={`mt-4 font-bold text-white [text-shadow:0_2px_10px_rgba(0,0,0,0.5)] ${large ? "text-2xl sm:text-3xl" : "text-2xl"}`}
+        />
       </div>
     </button>
   );
@@ -368,7 +375,7 @@ export function CreezVotreBoxBuilder({
               {t("step1Title")}
             </h2>
             <div className="max-w-5xl mx-auto space-y-5 md:space-y-6">
-              <div className="stagger-fade grid grid-cols-2 lg:grid-cols-4 gap-5 md:gap-6">
+              <div className="stagger-fade grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 md:gap-6">
                 {pricing
                   .filter(({ size }) => size !== 6)
                   .map(({ size, price }) => (
@@ -378,6 +385,7 @@ export function CreezVotreBoxBuilder({
                       price={price}
                       selected={selectedSize === size}
                       perfumesLabel={locale === "fr" ? "parfums" : "عطور"}
+                      tagline={locale === "fr" ? SIZE_TAGLINES[size].fr : SIZE_TAGLINES[size].ar}
                       imageSrc={SIZE_IMAGES[size]}
                       onClick={() => handleSizeSelect(size as 2 | 3 | 4 | 5 | 6)}
                     />
@@ -392,6 +400,7 @@ export function CreezVotreBoxBuilder({
                     price={price}
                     selected={selectedSize === size}
                     perfumesLabel={locale === "fr" ? "parfums" : "عطور"}
+                    tagline={locale === "fr" ? SIZE_TAGLINES[size].fr : SIZE_TAGLINES[size].ar}
                     imageSrc={SIZE_IMAGES[size]}
                     onClick={() => handleSizeSelect(size as 2 | 3 | 4 | 5 | 6)}
                     large

@@ -26,7 +26,7 @@
     "recommendedPerfumesTitle": "عطور لتكوين مجموعتك المفضلة",
     "discoverMorePerfumes": "اكتشف المزيد من العطور",
     "marqueeClient": "أكثر من 2000 عميل راضٍ",
-    "marqueeShipping": "توصيل لـ 58 ولاية",
+    "marqueeShipping": "توصيل لـ 69 ولاية",
     "marqueeBrand": "ملكة العطور"
   },
   "Perfumes": {
@@ -79,7 +79,12 @@
     "perfumeCount": "{count} {count, plural, =0 {عطر} =1 {عطر} =2 {عطران} other {عطور}}"
   },
   "Footer": {
-    "text": "© {year} ملكة العطور. جميع الحقوق محفوظة."
+    "text": "© {year} ملكة العطور. جميع الحقوق محفوظة.",
+    "adminLogin": "دخول الإدارة"
+  },
+  "Whatsapp": {
+    "message": "مرحباً، لدي سؤال حول...",
+    "cta": "تواصلي معنا عبر واتساب"
   },
   "PackBuilder": {
     "title": "شكلي مجموعتك",
@@ -131,9 +136,12 @@
     "codDesc": "الدفع نقداً عند استلام طردك.",
     "subtotal": "المجموع الفرعي",
     "deliveryFeeLabel": "رسوم التوصيل",
-    "deliveryFeeNote": "تُحسب رسوم التوصيل حسب ولايتك",
+    "deliveryFeeLoading": "جارٍ الحساب…",
+    "deliveryFeeUnavailable": "غير متوفر",
+    "deliveryFeeUnavailableMessage": "التوصيل غير متوفر حالياً لهذه الولاية. تواصلي معنا عبر واتساب لإتمام طلبك.",
     "total": "المجموع",
     "placeOrder": "تأكيد الطلب",
+    "placingOrder": "جارٍ إرسال الطلب…",
     "successTitle": "تم تأكيد الطلب!",
     "successDesc": "تم تسجيل طلبك بنجاح. سنتصل بك قريباً للتوصيل.",
     "fullNameRequired": "يرجى إدخال الاسم الكامل.",
@@ -143,7 +151,9 @@
     "addressRequired": "يرجى إدخال عنوان كامل.",
     "emptyCartTitle": "سلة التسوق فارغة",
     "emptyCartDesc": "أضيفي عطوراً أو مجموعة قبل إتمام الطلب.",
-    "emptyCartCta": "اكتشفي مجموعاتنا"
+    "emptyCartCta": "اكتشفي مجموعاتنا",
+    "orderErrorGeneric": "حدث خطأ ما، يرجى المحاولة مرة أخرى.",
+    "orderErrorStock": "أحد المنتجات في طلبك لم يعد متوفراً بالكمية الكافية."
   },
   "HowItWorks": {
     "title": "كيف تعمل؟",

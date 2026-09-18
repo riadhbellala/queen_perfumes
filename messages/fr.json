@@ -26,7 +26,7 @@
     "recommendedPerfumesTitle": "Des parfums pour composer votre box favori",
     "discoverMorePerfumes": "Découvrir plus de parfums",
     "marqueeClient": "Plus de 2000 clients satisfaits",
-    "marqueeShipping": "Livraison 58 wilayas",
+    "marqueeShipping": "Livraison dans les 69 wilayas",
     "marqueeBrand": "The Queen of Perfumes"
   },
   "Perfumes": {
@@ -79,7 +79,12 @@
     "perfumeCount": "{count} {count, plural, =0 {parfum} =1 {parfum} other {parfums}}"
   },
   "Footer": {
-    "text": "\u00a9 {year} The Queen of Perfumes. Tous droits réservés."
+    "text": "\u00a9 {year} The Queen of Perfumes. Tous droits réservés.",
+    "adminLogin": "Espace admin"
+  },
+  "Whatsapp": {
+    "message": "Bonjour, j'ai une question sur...",
+    "cta": "Contacter sur WhatsApp"
   },
   "PackBuilder": {
     "title": "Créez votre box",
@@ -131,9 +136,12 @@
     "codDesc": "Cash on Delivery — vous payez en espèces à la réception de votre colis.",
     "subtotal": "Sous-total",
     "deliveryFeeLabel": "Frais de livraison",
-    "deliveryFeeNote": "Frais de livraison calculés selon votre wilaya",
+    "deliveryFeeLoading": "Calcul en cours…",
+    "deliveryFeeUnavailable": "Indisponible",
+    "deliveryFeeUnavailableMessage": "Livraison indisponible pour cette wilaya pour le moment. Contactez-nous sur WhatsApp pour finaliser votre commande.",
     "total": "Total",
     "placeOrder": "Confirmer la commande",
+    "placingOrder": "Envoi en cours…",
     "successTitle": "Commande confirmée !",
     "successDesc": "Votre commande a été enregistrée avec succès. Nous vous contacterons bientôt pour la livraison.",
     "fullNameRequired": "Veuillez indiquer votre nom complet.",
@@ -143,7 +151,9 @@
     "addressRequired": "Veuillez indiquer une adresse complète.",
     "emptyCartTitle": "Votre panier est vide",
     "emptyCartDesc": "Ajoutez des parfums ou une box avant de passer commande.",
-    "emptyCartCta": "Découvrir nos boxes"
+    "emptyCartCta": "Découvrir nos boxes",
+    "orderErrorGeneric": "Une erreur est survenue, veuillez réessayer.",
+    "orderErrorStock": "Un des articles de votre commande n'est plus disponible en quantité suffisante."
   },
   "HowItWorks": {
     "title": "Comment ça marche ?",
