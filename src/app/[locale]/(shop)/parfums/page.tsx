@@ -1,12 +1,14 @@
 import { getTranslations } from "next-intl/server";
-import { createClient } from "@/lib/supabase/server";
+import { supabasePublic } from "@/lib/supabase/public";
 import { mapPerfumeRow } from "@/lib/supabase/mappers";
 import { PerfumesBrowser } from "@/components/shop/perfumes-browser";
+
+export const revalidate = 60;
 
 export default async function PerfumesPage() {
   const t = await getTranslations("Perfumes");
 
-  const supabase = await createClient();
+  const supabase = supabasePublic;
   const { data: perfumeRows } = await supabase
     .from("perfumes")
     .select("*")

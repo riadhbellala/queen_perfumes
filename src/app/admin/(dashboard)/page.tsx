@@ -173,32 +173,33 @@ export default async function AdminDashboardPage() {
 
   return (
     <div>
-      <div className="flex flex-wrap items-center justify-between gap-4">
+      <div className="flex flex-wrap items-center justify-between gap-3 sm:gap-4">
         <div>
-          <h1 className="text-2xl font-semibold text-zinc-900">Aperçu</h1>
+          <h1 className="text-xl font-semibold text-zinc-900 sm:text-2xl">Aperçu</h1>
           <p className="mt-1 text-sm text-zinc-500">Activité des 30 derniers jours.</p>
         </div>
-        <div className="rounded-full border border-zinc-200 bg-white px-4 py-2 text-sm font-medium text-zinc-600">
+        <div className="rounded-full border border-zinc-200 bg-white px-3 py-1.5 text-xs font-medium text-zinc-600 sm:px-4 sm:py-2 sm:text-sm">
           {now.toLocaleDateString("fr-FR", { day: "numeric", month: "long", year: "numeric" })}
         </div>
       </div>
 
       {/* Stat cards */}
-      <div className="mt-6 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
+      <div className="mt-5 grid grid-cols-2 gap-3 sm:mt-6 sm:gap-4 lg:grid-cols-4">
         {stats.map((stat) => (
           <Card key={stat.label}>
-            <CardContent className="p-5">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm font-medium text-zinc-900">{stat.label}</p>
-                  <p className="text-xs text-zinc-400">30 derniers jours</p>
+            <CardContent className="p-3.5 sm:p-5">
+              <div className="flex items-center justify-between gap-2">
+                <div className="min-w-0">
+                  <p className="truncate text-xs font-medium text-zinc-900 sm:text-sm">{stat.label}</p>
+                  <p className="text-[10px] text-zinc-400 sm:text-xs">30 derniers jours</p>
                 </div>
-                <div className={`grid size-10 shrink-0 place-items-center rounded-full ${stat.tint}`}>
-                  <stat.icon size={18} />
+                <div className={`grid size-8 shrink-0 place-items-center rounded-full sm:size-10 ${stat.tint}`}>
+                  <stat.icon size={15} className="sm:hidden" />
+                  <stat.icon size={18} className="hidden sm:block" />
                 </div>
               </div>
-              <div className="mt-4 flex items-end justify-between gap-2">
-                <p className="text-2xl font-semibold text-zinc-900">{stat.value}</p>
+              <div className="mt-3 flex items-end justify-between gap-2 sm:mt-4">
+                <p className="text-lg font-semibold text-zinc-900 sm:text-2xl">{stat.value}</p>
                 {stat.trend !== null && <TrendBadge value={stat.trend} />}
               </div>
             </CardContent>
@@ -207,36 +208,36 @@ export default async function AdminDashboardPage() {
       </div>
 
       {/* Revenue trend + order status breakdown */}
-      <div className="mt-6 grid grid-cols-1 gap-6 lg:grid-cols-3">
+      <div className="mt-5 grid grid-cols-1 gap-4 sm:mt-6 sm:gap-6 lg:grid-cols-3">
         <Card className="lg:col-span-2">
-          <CardContent className="p-6">
+          <CardContent className="p-4 sm:p-6">
             <div className="flex items-center justify-between">
-              <h2 className="text-lg font-semibold text-zinc-900">Analyse des ventes</h2>
+              <h2 className="text-base font-semibold text-zinc-900 sm:text-lg">Analyse des ventes</h2>
               <span className="text-xs text-zinc-400">14 derniers jours</span>
             </div>
-            <div className="mt-6 grid grid-cols-3 gap-4 border-b border-zinc-100 pb-6">
-              <div>
-                <p className="text-xs text-zinc-400">Chiffre d&apos;affaires</p>
-                <p className="mt-1 text-lg font-semibold text-zinc-900">{revenueLast30.toLocaleString("fr-FR")} DA</p>
+            <div className="mt-5 grid grid-cols-3 gap-2 border-b border-zinc-100 pb-5 sm:mt-6 sm:gap-4 sm:pb-6">
+              <div className="min-w-0">
+                <p className="truncate text-[10px] text-zinc-400 sm:text-xs">Chiffre d&apos;affaires</p>
+                <p className="mt-1 truncate text-sm font-semibold text-zinc-900 sm:text-lg">{revenueLast30.toLocaleString("fr-FR")} DA</p>
               </div>
-              <div>
-                <p className="text-xs text-zinc-400">Commandes valides</p>
-                <p className="mt-1 text-lg font-semibold text-zinc-900">{validLast30.length}</p>
+              <div className="min-w-0">
+                <p className="truncate text-[10px] text-zinc-400 sm:text-xs">Commandes valides</p>
+                <p className="mt-1 truncate text-sm font-semibold text-zinc-900 sm:text-lg">{validLast30.length}</p>
               </div>
-              <div>
-                <p className="text-xs text-zinc-400">Panier moyen</p>
-                <p className="mt-1 text-lg font-semibold text-zinc-900">{Math.round(avgBasket).toLocaleString("fr-FR")} DA</p>
+              <div className="min-w-0">
+                <p className="truncate text-[10px] text-zinc-400 sm:text-xs">Panier moyen</p>
+                <p className="mt-1 truncate text-sm font-semibold text-zinc-900 sm:text-lg">{Math.round(avgBasket).toLocaleString("fr-FR")} DA</p>
               </div>
             </div>
-            <div className="mt-4">
+            <div className="mt-4 -ms-2 sm:ms-0">
               <RevenueChart data={days} />
             </div>
           </CardContent>
         </Card>
 
         <Card>
-          <CardContent className="p-6">
-            <h2 className="mb-4 text-lg font-semibold text-zinc-900">Répartition des commandes</h2>
+          <CardContent className="p-4 sm:p-6">
+            <h2 className="mb-4 text-base font-semibold text-zinc-900 sm:text-lg">Répartition des commandes</h2>
             <StatusDonut data={statusData} />
             <div className="mt-5 flex flex-col gap-2.5">
               {statusData
@@ -259,26 +260,26 @@ export default async function AdminDashboardPage() {
       </div>
 
       {/* Top products + stock to watch */}
-      <div className="mt-6 grid grid-cols-1 gap-6 lg:grid-cols-3">
+      <div className="mt-5 grid grid-cols-1 gap-4 sm:mt-6 sm:gap-6 lg:grid-cols-3">
         <Card className="lg:col-span-2">
-          <CardContent className="p-6">
-            <h2 className="mb-4 text-lg font-semibold text-zinc-900">
+          <CardContent className="p-4 sm:p-6">
+            <h2 className="mb-4 text-base font-semibold text-zinc-900 sm:text-lg">
               Meilleures ventes <span className="text-xs font-normal text-zinc-400">— 30 derniers jours</span>
             </h2>
             {topProducts.length === 0 ? (
               <p className="text-sm text-zinc-500">Aucune vente sur cette période.</p>
             ) : (
-              <div className="flex gap-4 overflow-x-auto pb-1">
+              <div className="flex gap-3 overflow-x-auto pb-1 sm:gap-4">
                 {topProducts.map((product) => (
-                  <div key={product.id} className="w-32 shrink-0">
+                  <div key={product.id} className="w-24 shrink-0 sm:w-32">
                     <div className="aspect-square overflow-hidden rounded-xl bg-zinc-100">
                       {product.imageUrl && (
                         // eslint-disable-next-line @next/next/no-img-element
-                        <img src={product.imageUrl} alt={product.name} className="h-full w-full object-cover" />
+                        <img src={product.imageUrl} alt={product.name} loading="lazy" className="h-full w-full object-cover" />
                       )}
                     </div>
-                    <p className="mt-2 truncate text-sm font-medium text-zinc-900">{product.name}</p>
-                    <p className="text-xs text-zinc-400">{product.qty} vendus</p>
+                    <p className="mt-2 truncate text-xs font-medium text-zinc-900 sm:text-sm">{product.name}</p>
+                    <p className="text-[10px] text-zinc-400 sm:text-xs">{product.qty} vendus</p>
                   </div>
                 ))}
               </div>
@@ -287,8 +288,8 @@ export default async function AdminDashboardPage() {
         </Card>
 
         <Card>
-          <CardContent className="p-6">
-            <h2 className="mb-4 text-lg font-semibold text-zinc-900">Stock à surveiller</h2>
+          <CardContent className="p-4 sm:p-6">
+            <h2 className="mb-4 text-base font-semibold text-zinc-900 sm:text-lg">Stock à surveiller</h2>
             <div className="flex flex-col gap-4">
               {(lowStockRows ?? []).map((perfume) => {
                 const pct = Math.max(4, Math.min(100, (perfume.stock / 20) * 100));

@@ -85,7 +85,7 @@ export default function PanierPage() {
                   <div className="size-16 shrink-0 overflow-hidden rounded-xl bg-muted">
                     {lineImage(item) ? (
                       // eslint-disable-next-line @next/next/no-img-element
-                      <img src={lineImage(item)} alt={title} className="h-full w-full object-cover" />
+                      <img src={lineImage(item)} alt={title} loading="lazy" className="h-full w-full object-cover" />
                     ) : (
                       <div className="flex h-full w-full items-center justify-center text-zinc-300">
                         <ShoppingBag size={22} />

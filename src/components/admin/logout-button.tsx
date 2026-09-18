@@ -25,10 +25,11 @@ export function LogoutButton() {
       size="sm"
       onClick={handleLogout}
       disabled={loading}
-      className="gap-2 rounded-lg"
+      aria-label="Déconnexion"
+      className="gap-2 rounded-lg px-2.5 sm:px-3"
     >
       <LogOut size={16} data-icon="inline-start" />
-      Déconnexion
+      <span className="hidden sm:inline">Déconnexion</span>
     </Button>
   );
 }

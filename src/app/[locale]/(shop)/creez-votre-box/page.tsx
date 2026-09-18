@@ -1,12 +1,14 @@
 import { getTranslations } from "next-intl/server";
-import { createClient } from "@/lib/supabase/server";
+import { supabasePublic } from "@/lib/supabase/public";
 import { mapPerfumeRow, mapPackSizePricingRow } from "@/lib/supabase/mappers";
 import { CreezVotreBoxBuilder } from "@/components/shop/creez-votre-box-builder";
+
+export const revalidate = 60;
 
 export default async function CreezVotreBoxPage() {
   const t = await getTranslations("PackBuilder");
 
-  const supabase = await createClient();
+  const supabase = supabasePublic;
   const [{ data: perfumeRows }, { data: pricingRows }] = await Promise.all([
     supabase.from("perfumes").select("*").eq("is_active", true).order("created_at", { ascending: true }),
     supabase.from("pack_size_pricing").select("size, price").order("size", { ascending: true }),

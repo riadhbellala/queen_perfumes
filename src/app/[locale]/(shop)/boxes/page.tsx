@@ -1,7 +1,9 @@
 import { getTranslations } from "next-intl/server";
-import { createClient } from "@/lib/supabase/server";
+import { supabasePublic } from "@/lib/supabase/public";
 import { mapPackRow } from "@/lib/supabase/mappers";
 import { BoxesBrowser } from "@/components/shop/boxes-browser";
+
+export const revalidate = 60;
 
 export default async function BoxesPage({
   params,
@@ -11,7 +13,7 @@ export default async function BoxesPage({
   const { locale } = await params;
   const t = await getTranslations("Packs");
 
-  const supabase = await createClient();
+  const supabase = supabasePublic;
   const [{ data: packRows }, { data: pricingRows }] = await Promise.all([
     supabase
       .from("packs")

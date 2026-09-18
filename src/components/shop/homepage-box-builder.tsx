@@ -99,6 +99,7 @@ export function HomepageBoxBuilder({
                       <img
                         src={perfume.imageUrl}
                         alt={perfume.name[locale]}
+                        loading="lazy"
                         className="h-full w-full object-cover"
                       />
                     )}
@@ -138,6 +139,7 @@ export function HomepageBoxBuilder({
                     <img
                       src={perfume.imageUrl}
                       alt={perfume.name[locale]}
+                      loading="lazy"
                       className="object-cover w-full h-full transition-transform duration-700 group-hover:scale-105"
                     />
                   ) : (
@@ -194,6 +196,7 @@ export function HomepageBoxBuilder({
                       <img
                         src={perfume.imageUrl}
                         alt={perfume.name[locale]}
+                        loading="lazy"
                         className="w-full h-72 object-cover rounded-2xl mb-6 shadow-sm"
                       />
                     )}

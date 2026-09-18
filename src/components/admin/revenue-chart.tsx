@@ -20,7 +20,13 @@ export function RevenueChart({ data }: { data: { label: string; total: number }[
           </linearGradient>
         </defs>
         <CartesianGrid vertical={false} stroke="#f1f1f0" />
-        <XAxis dataKey="label" tick={{ fontSize: 11, fill: "#a1a1aa" }} axisLine={false} tickLine={false} />
+        <XAxis
+          dataKey="label"
+          tick={{ fontSize: 11, fill: "#a1a1aa" }}
+          axisLine={false}
+          tickLine={false}
+          interval={2}
+        />
         <YAxis
           tick={{ fontSize: 11, fill: "#a1a1aa" }}
           axisLine={false}

@@ -97,7 +97,7 @@ export function PerfumesTable({ perfumes }: { perfumes: AdminPerfumeRow[] }) {
                   <div className="flex size-10 items-center justify-center overflow-hidden rounded-lg bg-zinc-50">
                     {perfume.image_url ? (
                       // eslint-disable-next-line @next/next/no-img-element
-                      <img src={perfume.image_url} alt="" className="h-full w-full object-cover" />
+                      <img src={perfume.image_url} alt="" loading="lazy" className="h-full w-full object-cover" />
                     ) : (
                       <ShoppingBag className="text-zinc-300" size={16} />
                     )}

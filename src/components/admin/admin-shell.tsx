@@ -95,7 +95,7 @@ export function AdminShell({ children }: { children: React.ReactNode }) {
           <LogoutButton />
         </header>
 
-        <main className="p-6 md:p-8">{children}</main>
+        <main className="p-4 sm:p-6 md:p-8">{children}</main>
       </div>
 
       {/* Mobile nav drawer */}

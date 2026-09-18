@@ -15,7 +15,7 @@ function LineThumbnail({ src, alt }: { src?: string; alt: string }) {
     <div className="size-12 shrink-0 overflow-hidden rounded-lg bg-muted">
       {src ? (
         // eslint-disable-next-line @next/next/no-img-element
-        <img src={src} alt={alt} className="h-full w-full object-cover" />
+        <img src={src} alt={alt} loading="lazy" className="h-full w-full object-cover" />
       ) : (
         <div className="flex h-full w-full items-center justify-center text-zinc-400">
           <ShoppingBag size={16} />
@@ -36,6 +36,7 @@ function PerfumeCard({ perfume, locale }: { perfume: CartPerfumeSummary; locale:
           <img
             src={perfume.imageUrl}
             alt={perfume.name[locale]}
+            loading="lazy"
             className="h-full w-full object-cover"
           />
         ) : (

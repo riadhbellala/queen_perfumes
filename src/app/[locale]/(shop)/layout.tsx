@@ -197,7 +197,7 @@ export default function ShopLayout({ children }: { children: React.ReactNode }) 
           {/* Header: logo (sized up — a real wordmark moment, not a small
               utility label) + close control in the corner */}
           <div className="flex shrink-0 items-center justify-between px-6 py-5 border-b border-border">
-            <img src="/assets/logo/tqp-logo-.png" alt="The Queen of Perfumes" className="h-16 w-auto" />
+            <img src="/assets/logo/tqp-logo-.png" alt="The Queen of Perfumes" className="h-16 w-auto" loading="lazy" />
             <button
               onClick={() => setIsDrawerOpen(false)}
               className="p-2 text-foreground/40 hover:text-foreground transition-colors rounded-full hover:bg-muted"
@@ -257,6 +257,7 @@ export default function ShopLayout({ children }: { children: React.ReactNode }) 
               src="/assets/logo/tqp-logo-.png"
               alt="The Queen of Perfumes"
               className="h-16 w-auto"
+              loading="lazy"
             />
           </Link>
 

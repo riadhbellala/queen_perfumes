@@ -18,7 +18,7 @@ export function OrderPerfumeCard({ perfume }: { perfume: OrderCardPerfume }) {
       <div className="aspect-square w-full shrink-0 overflow-hidden rounded-xl bg-zinc-50 sm:w-32">
         {perfume.image_url ? (
           // eslint-disable-next-line @next/next/no-img-element
-          <img src={perfume.image_url} alt={perfume.name_fr} className="h-full w-full object-cover" />
+          <img src={perfume.image_url} alt={perfume.name_fr} loading="lazy" className="h-full w-full object-cover" />
         ) : (
           <div className="flex h-full w-full items-center justify-center text-zinc-300">
             <ShoppingBag size={24} />

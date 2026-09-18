@@ -206,6 +206,7 @@ function PerfumePickerCard({
             <img
               src={perfume.imageUrl}
               alt={perfume.name[locale]}
+              loading="lazy"
               className="object-cover w-full h-full transition-transform duration-500 group-hover:scale-105"
             />
           ) : (
@@ -260,6 +261,7 @@ function PerfumePickerCard({
               <img
                 src={perfume.imageUrl}
                 alt={perfume.name[locale]}
+                loading="lazy"
                 className="w-full h-64 object-cover rounded-xl mb-6"
               />
             )}
@@ -475,6 +477,7 @@ export function CreezVotreBoxBuilder({
                             <img
                               src={perfume!.imageUrl}
                               alt={perfume!.name[locale]}
+                              loading="lazy"
                               className="h-full w-full object-cover"
                             />
                           )}

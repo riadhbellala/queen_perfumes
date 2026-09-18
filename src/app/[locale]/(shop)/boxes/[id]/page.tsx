@@ -1,11 +1,13 @@
 import { notFound } from "next/navigation";
 import { getTranslations } from "next-intl/server";
-import { createClient } from "@/lib/supabase/server";
+import { supabasePublic } from "@/lib/supabase/public";
 import { mapPackRow, mapPerfumeRow } from "@/lib/supabase/mappers";
 import { Badge } from "@/components/ui/badge";
 import { Price } from "@/components/shop/price";
 import { BoxAddToCart } from "@/components/shop/box-add-to-cart";
 import Link from "next/link";
+
+export const revalidate = 60;
 
 export default async function BoxDetailPage({
   params,
@@ -13,7 +15,7 @@ export default async function BoxDetailPage({
   params: Promise<{ locale: string; id: string }>;
 }) {
   const { locale, id } = await params;
-  const supabase = await createClient();
+  const supabase = supabasePublic;
 
   const { data: packRow } = await supabase
     .from("packs")
@@ -128,6 +130,7 @@ export default async function BoxDetailPage({
                   <img
                     src={perfume.imageUrl}
                     alt={perfume.name[loc]}
+                    loading="lazy"
                     className="object-cover w-full h-full"
                   />
                 ) : (

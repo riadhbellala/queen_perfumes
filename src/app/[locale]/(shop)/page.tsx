@@ -1,13 +1,18 @@
 import React from "react";
 import Link from "next/link";
 import { getTranslations } from "next-intl/server";
-import { createClient } from "@/lib/supabase/server";
+import { supabasePublic } from "@/lib/supabase/public";
 import { mapPackRow, mapPerfumeRow, mapPackSizePricingRow } from "@/lib/supabase/mappers";
 import { BoxesCarousel } from "@/components/shop/boxes-carousel";
 import { HomepageBoxBuilder } from "@/components/shop/homepage-box-builder";
 import { Price } from "@/components/shop/price";
 import { InstagramIcon, TikTokIcon } from "@/components/shop/social-icons";
 import { FlowButton } from "@/components/ui/flow-button";
+
+// Catalog data changes rarely (admin edits), so this page is ISR-cached
+// instead of hitting Supabase fresh on every visit — see supabase/public.ts
+// for why that requires the plain anon client, not the cookie-based one.
+export const revalidate = 60;
 
 export default async function ShopHomepage({
   params,
@@ -19,7 +24,7 @@ export default async function ShopHomepage({
   const tHero = await getTranslations("Hero");
   const tPackBuilder = await getTranslations("PackBuilder");
 
-  const supabase = await createClient();
+  const supabase = supabasePublic;
   const [{ data: packRows }, { data: perfumeRows }, { data: pricingRows }] = await Promise.all([
     supabase
       .from("packs")

@@ -1,6 +1,8 @@
 import React from "react";
 import { getTranslations } from "next-intl/server";
 
+export const revalidate = 60;
+
 export default async function AboutPage() {
   const tNav = await getTranslations("Navigation");
   
