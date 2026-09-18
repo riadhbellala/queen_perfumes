@@ -10,7 +10,7 @@ import { InstagramIcon, TikTokIcon } from "@/components/shop/social-icons";
 import { WhatsAppIcon } from "@/components/shop/whatsapp-icon";
 import { WhatsAppButton } from "@/components/shop/whatsapp-button";
 import { getWhatsAppUrl } from "@/lib/whatsapp";
-import { Menu, X, ShoppingBag } from "lucide-react";
+import { Menu, X, ShoppingBag, LogIn } from "lucide-react";
 
 function CartLink({ onClick }: { onClick?: () => void }) {
   const { itemCount } = useCart();
@@ -255,8 +255,9 @@ export default function ShopLayout({ children }: { children: React.ReactNode }) 
             </p>
             <Link
               href="/admin/login"
-              className="text-xs text-zinc-300 tracking-wide transition-colors hover:text-zinc-500"
+              className="inline-flex items-center gap-2 rounded-full border border-zinc-200 px-4 py-2 text-sm font-medium text-zinc-500 transition-colors hover:border-zinc-900 hover:bg-zinc-900 hover:text-white"
             >
+              <LogIn size={16} />
               {tFooter("adminLogin")}
             </Link>
           </div>
