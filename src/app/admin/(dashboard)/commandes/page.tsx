@@ -64,7 +64,7 @@ export default async function AdminCommandesPage() {
 
   return (
     <div>
-      <h1 className="text-2xl font-semibold text-zinc-900">Commandes</h1>
+      <h1 className="text-xl font-semibold text-zinc-900 sm:text-2xl">Commandes</h1>
       <p className="mt-1 text-sm text-zinc-500">{orders.length} commande(s) au total.</p>
 
       <div className="mt-6">

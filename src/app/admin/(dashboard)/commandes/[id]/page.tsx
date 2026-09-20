@@ -133,22 +133,24 @@ export default async function AdminOrderDetailPage({
         Retour aux commandes
       </Link>
 
-      <div className="flex flex-wrap items-center justify-between gap-4">
-        <div>
-          <h1 className="font-mono text-2xl font-semibold text-zinc-900">
+      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+        <div className="min-w-0">
+          <h1 className="font-mono text-xl font-semibold text-zinc-900 sm:text-2xl">
             Commande #{order.id.slice(0, 8)}
           </h1>
           <p className="mt-1 text-sm text-zinc-500">{formatOrderDate(order.created_at)}</p>
         </div>
         <div className="flex items-center gap-3">
           <OrderStatusBadge status={order.status} />
-          <OrderStatusSelect orderId={order.id} status={status} />
+          <div className="flex-1 sm:flex-none">
+            <OrderStatusSelect orderId={order.id} status={status} />
+          </div>
         </div>
       </div>
 
       <div className="mt-6 grid grid-cols-1 gap-6 lg:grid-cols-3">
         {/* Customer info */}
-        <div className="rounded-2xl border border-zinc-200 bg-white p-6 lg:col-span-1">
+        <div className="rounded-2xl border border-zinc-200 bg-white p-4 sm:p-6 lg:col-span-1">
           <h2 className="text-sm font-semibold text-zinc-900">Informations client</h2>
           <dl className="mt-4 flex flex-col gap-3 text-sm">
             <div>
@@ -202,13 +204,13 @@ export default async function AdminOrderDetailPage({
         {/* Order items */}
         <div className="flex flex-col gap-6 lg:col-span-2">
           {lines.map((line) => (
-            <div key={line.id} className="rounded-2xl border border-zinc-200 bg-white p-5">
+            <div key={line.id} className="rounded-2xl border border-zinc-200 bg-white p-4 sm:p-5">
               <div className="flex items-center justify-between gap-4 pb-4">
-                <div>
-                  <p className="font-medium text-zinc-900">{line.title}</p>
+                <div className="min-w-0">
+                  <p className="text-balance font-medium text-zinc-900">{line.title}</p>
                   <p className="text-xs text-zinc-500">Qté × {line.quantity}</p>
                 </div>
-                <p className="font-semibold text-zinc-900">{line.line_total} DA</p>
+                <p className="shrink-0 font-semibold text-zinc-900">{line.line_total} DA</p>
               </div>
 
               {line.item_type === "pack" && line.packDescription && (

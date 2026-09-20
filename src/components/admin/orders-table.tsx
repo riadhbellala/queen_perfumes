@@ -51,8 +51,11 @@ export function OrdersTable({
 
   return (
     <div>
-      <div className="mb-4 flex flex-wrap items-center justify-between gap-4">
-        <div className="flex flex-wrap items-center gap-2">
+      <div className="mb-4 flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-center sm:justify-between">
+        {/* Horizontally scrollable on mobile instead of wrapping into
+            several rows of pills — 7 filters (Toutes + 6 statuses) is too
+            many to wrap cleanly on a narrow phone. */}
+        <div className="scrollbar-none -mx-4 flex gap-2 overflow-x-auto px-4 sm:mx-0 sm:flex-wrap sm:px-0">
           {FILTERS.map(({ key, label }) => (
             <button
               key={key}
@@ -65,13 +68,47 @@ export function OrdersTable({
             </button>
           ))}
         </div>
-        <Button type="button" variant="outline" onClick={handleExport} className="gap-2">
+        <Button type="button" variant="outline" onClick={handleExport} className="w-full gap-2 sm:w-auto">
           <Download size={16} data-icon="inline-start" />
           Exporter en Excel
         </Button>
       </div>
 
-      <div className="overflow-hidden rounded-2xl border border-zinc-200 bg-white">
+      {/* Mobile: tap-anywhere cards instead of a sideways-scrolling table —
+          the small "Voir" icon button was easy to miss on a phone anyway. */}
+      <div className="flex flex-col gap-3 md:hidden">
+        {filtered.map((order) => (
+          <Link
+            key={order.id}
+            href={`/admin/commandes/${order.id}`}
+            className="block rounded-xl border border-zinc-200 bg-white p-3 transition-colors active:bg-zinc-50"
+          >
+            <div className="flex items-start justify-between gap-3">
+              <div className="min-w-0">
+                <p className="truncate font-medium text-zinc-900">{order.customer_name}</p>
+                <p className="mt-0.5 font-mono text-xs text-zinc-400">#{order.id.slice(0, 8)}</p>
+              </div>
+              <OrderStatusBadge status={order.status} />
+            </div>
+            <div className="mt-2 flex flex-wrap items-center gap-x-2 gap-y-1 text-sm text-zinc-500">
+              <span>{order.wilaya}</span>
+              <span className="text-zinc-300">·</span>
+              <span>{formatOrderDate(order.created_at)}</span>
+            </div>
+            <div className="mt-2 flex items-center justify-between border-t border-zinc-100 pt-2">
+              <span className="text-sm text-zinc-500">{order.phone}</span>
+              <span className="font-semibold text-zinc-900">{order.total} DA</span>
+            </div>
+          </Link>
+        ))}
+        {filtered.length === 0 && (
+          <p className="rounded-xl border border-zinc-200 bg-white py-10 text-center text-sm text-zinc-500">
+            Aucune commande trouvée.
+          </p>
+        )}
+      </div>
+
+      <div className="hidden overflow-hidden rounded-2xl border border-zinc-200 bg-white md:block">
         <Table>
           <TableHeader>
             <TableRow>
