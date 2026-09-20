@@ -6,6 +6,7 @@ import { Badge } from "@/components/ui/badge";
 import { Price } from "@/components/shop/price";
 import { PerfumeAddToCart } from "@/components/shop/perfume-add-to-cart";
 import Link from "next/link";
+import { ArrowLeft } from "lucide-react";
 
 export const revalidate = 60;
 
@@ -34,27 +35,28 @@ export default async function PerfumeDetailPage({
   const loc = locale as "fr" | "ar";
 
   return (
-    <div className="max-w-7xl mx-auto w-full px-6 lg:px-8 py-12">
-      <div className="mb-6">
+    <div className="mx-auto w-full max-w-7xl px-6 py-10 lg:px-8 md:py-14">
+      <div className="mb-8">
         <Link
           href={`/${locale}/parfums`}
-          className="text-sm font-medium text-zinc-500 hover:text-zinc-900 transition-colors"
+          className="inline-flex items-center gap-2 text-sm font-medium text-muted-foreground transition-colors hover:text-foreground"
         >
+          <ArrowLeft size={15} className={loc === "ar" ? "rotate-180" : ""} />
           {tPerfumes("backToPerfumes")}
         </Link>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-12 lg:gap-20">
-        {/* Left: Image */}
-        <div className="aspect-square bg-muted rounded-2xl flex items-center justify-center relative overflow-hidden">
+      <div className="grid grid-cols-1 items-start gap-10 md:grid-cols-2 lg:gap-20">
+        {/* Image — portrait ratio matches catalog cards */}
+        <div className="relative aspect-[3/4] overflow-hidden rounded-2xl bg-muted ring-1 ring-border">
           {perfume.imageUrl ? (
             <img
               src={perfume.imageUrl}
               alt={perfume.name[loc]}
-              className="object-cover w-full h-full"
+              className="h-full w-full object-cover"
             />
           ) : (
-            <div className="w-full h-full flex items-center justify-center text-zinc-300">
+            <div className="flex h-full w-full items-center justify-center text-muted-foreground/40">
               <svg
                 xmlns="http://www.w3.org/2000/svg"
                 width="96"
@@ -73,38 +75,47 @@ export default async function PerfumeDetailPage({
             </div>
           )}
           {!perfume.inStock && (
-            <div className="absolute top-4 end-4 bg-white/90 backdrop-blur text-red-600 text-xs font-semibold px-3 py-1.5 rounded-full shadow-sm">
+            <div className="absolute end-4 top-4 rounded-full bg-background/90 px-3 py-1.5 text-xs font-semibold text-destructive shadow-sm ring-1 ring-border backdrop-blur-sm">
               {tProduct("outOfStockBadge")}
             </div>
           )}
         </div>
 
-        {/* Right: Details */}
-        <div className="flex flex-col justify-center">
-          <h1 className="text-4xl lg:text-5xl font-display font-semibold tracking-tight text-zinc-900 mb-6">
+        {/* Details */}
+        <div className="flex flex-col justify-center md:py-4">
+          <p className="mb-3 text-[11px] font-medium uppercase tracking-[0.16em] text-muted-foreground">
+            {perfume.scentFamily} · {perfume.concentration}
+          </p>
+
+          <h1 className="mb-6 font-display text-4xl font-medium tracking-tight text-foreground lg:text-5xl">
             {perfume.name[loc]}
           </h1>
 
-          <div className="flex gap-2 mb-6">
-            <Badge variant="secondary" className="font-normal text-xs">
+          <div className="mb-6 flex flex-wrap gap-2">
+            <Badge variant="secondary" className="text-xs font-normal">
               {perfume.scentFamily}
             </Badge>
-            <Badge variant="outline" className="font-normal text-xs">
+            <Badge variant="outline" className="text-xs font-normal">
               {perfume.concentration}
             </Badge>
+            {perfume.inStock ? (
+              <Badge className="border-transparent bg-primary/10 text-xs font-normal text-primary">
+                {tProduct("inStock")}
+              </Badge>
+            ) : null}
           </div>
 
           {perfume.price !== undefined && (
-            <Price amount={perfume.price} className="text-3xl font-medium text-zinc-900 mb-6" />
+            <Price amount={perfume.price} className="mb-8 text-3xl font-medium text-foreground" />
           )}
 
-          <p className="text-lg text-zinc-600 mb-10 leading-relaxed">
+          <p className="mb-10 max-w-prose text-base leading-relaxed text-muted-foreground md:text-lg">
             {perfume.description[loc]}
           </p>
 
           <PerfumeAddToCart perfume={perfume} />
 
-          <div className="text-sm text-zinc-500 space-y-2 pt-6 border-t border-border">
+          <div className="mt-8 space-y-2 border-t border-border pt-6 text-sm text-muted-foreground">
             <p>{tProduct("freeDelivery")}</p>
             <p>{tProduct("freeReturns")}</p>
           </div>

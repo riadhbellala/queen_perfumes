@@ -20,10 +20,13 @@ export default async function PerfumesPage() {
   return (
     <div className="bg-background min-h-screen">
       <div className="border-b border-border bg-secondary/60">
-        <div className="max-w-7xl mx-auto w-full px-6 lg:px-8 py-16 text-center">
-          <h1 className="text-4xl md:text-5xl font-heading font-medium tracking-tight text-zinc-900">
+        <div className="mx-auto w-full max-w-7xl px-6 py-14 text-center lg:px-8 md:py-16">
+          <h1 className="font-display text-4xl font-medium tracking-tight text-foreground md:text-5xl">
             {t("title")}
           </h1>
+          <p className="mx-auto mt-4 max-w-xl text-base text-muted-foreground md:text-lg">
+            {t("subtitle")}
+          </p>
         </div>
       </div>
 

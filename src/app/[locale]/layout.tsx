@@ -14,7 +14,7 @@ const inter = Inter({
 const cormorantGaramond = Cormorant_Garamond({
   variable: "--font-cormorant",
   subsets: ["latin"],
-  weight: ["500", "600", "700"],
+  weight: ["300", "500", "600", "700"],
 });
 
 const amiri = Amiri({

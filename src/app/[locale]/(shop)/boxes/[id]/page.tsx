@@ -6,6 +6,7 @@ import { Badge } from "@/components/ui/badge";
 import { Price } from "@/components/shop/price";
 import { BoxAddToCart } from "@/components/shop/box-add-to-cart";
 import Link from "next/link";
+import { ArrowLeft } from "lucide-react";
 
 export const revalidate = 60;
 
@@ -37,7 +38,6 @@ export default async function BoxDetailPage({
   const tProduct = await getTranslations("Product");
   const loc = locale as "fr" | "ar";
 
-  // Resolve perfumes in this pack, preserving the pack's own ordering
   const { data: perfumeRows } = perfumeIds.length
     ? await supabase.from("perfumes").select("*").in("id", perfumeIds)
     : { data: [] };
@@ -47,27 +47,27 @@ export default async function BoxDetailPage({
     .filter((p): p is NonNullable<typeof p> => p !== undefined);
 
   return (
-    <div className="max-w-7xl mx-auto w-full px-6 lg:px-8 py-12">
-      <div className="mb-6">
+    <div className="mx-auto w-full max-w-7xl px-6 py-10 lg:px-8 md:py-14">
+      <div className="mb-8">
         <Link
           href={`/${locale}/boxes`}
-          className="text-sm font-medium text-zinc-500 hover:text-zinc-900 transition-colors"
+          className="inline-flex items-center gap-2 text-sm font-medium text-muted-foreground transition-colors hover:text-foreground"
         >
+          <ArrowLeft size={15} className={loc === "ar" ? "rotate-180" : ""} />
           {tPack("backToPacks")}
         </Link>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-12 lg:gap-20 mb-24">
-        {/* Left: Image */}
-        <div className="aspect-square bg-muted rounded-2xl flex items-center justify-center relative overflow-hidden">
+      <div className="mb-20 grid grid-cols-1 items-start gap-10 md:grid-cols-2 lg:mb-24 lg:gap-20">
+        <div className="relative aspect-[3/4] overflow-hidden rounded-2xl bg-muted ring-1 ring-border">
           {pack.imageUrl ? (
             <img
               src={pack.imageUrl}
               alt={pack.name[loc]}
-              className="object-cover w-full h-full"
+              className="h-full w-full object-cover"
             />
           ) : (
-            <div className="w-full h-full flex items-center justify-center text-zinc-300">
+            <div className="flex h-full w-full items-center justify-center text-muted-foreground/40">
               <svg
                 xmlns="http://www.w3.org/2000/svg"
                 width="96"
@@ -89,52 +89,53 @@ export default async function BoxDetailPage({
           )}
         </div>
 
-        {/* Right: Details */}
-        <div className="flex flex-col justify-center">
-          <h1 className="text-4xl lg:text-5xl font-display font-semibold tracking-tight text-zinc-900 mb-6">
+        <div className="flex flex-col justify-center md:py-4">
+          <p className="mb-3 text-[11px] font-medium uppercase tracking-[0.16em] text-accent">
+            {tProduct("boxBadge")}
+          </p>
+
+          <h1 className="mb-6 font-display text-4xl font-medium tracking-tight text-foreground lg:text-5xl">
             {pack.name[loc]}
           </h1>
 
-          <Price amount={pack.price} className="text-3xl font-medium text-zinc-900 mb-6" />
+          <Price amount={pack.price} className="mb-8 text-3xl font-medium text-foreground" />
 
-          <p className="text-lg text-zinc-600 mb-10 leading-relaxed">
+          <p className="mb-10 max-w-prose text-base leading-relaxed text-muted-foreground md:text-lg">
             {pack.description[loc]}
           </p>
 
           <BoxAddToCart pack={pack} perfumes={packPerfumes} />
 
-          <div className="text-sm text-zinc-500 space-y-2 pt-6 border-t border-border">
+          <div className="mt-8 space-y-2 border-t border-border pt-6 text-sm text-muted-foreground">
             <p>{tProduct("freeDelivery")}</p>
             <p>{tProduct("freeReturns")}</p>
           </div>
         </div>
       </div>
 
-      {/* Cette box contient */}
       <section>
-        <h2 className="text-2xl font-display font-semibold tracking-tight text-zinc-900 mb-8">
+        <h2 className="mb-8 font-display text-2xl font-medium tracking-tight text-foreground">
           {tPack("contains")}
         </h2>
-        <div className="flex flex-col gap-6">
+        <div className="stagger-fade flex flex-col gap-5">
           {packPerfumes.map((perfume) => (
-            <div
+            <article
               key={perfume.id}
-              className="flex flex-col sm:flex-row gap-6 p-6 rounded-xl border bg-card shadow-sm hover:shadow-md transition-shadow"
+              className="flex flex-col gap-6 rounded-2xl border border-border bg-card p-5 transition-shadow duration-200 hover:shadow-sm sm:flex-row sm:p-6"
             >
-              {/* Small image placeholder */}
               <Link
                 href={`/${locale}/parfums/${perfume.id}`}
-                className="shrink-0 w-full sm:w-48 aspect-square sm:aspect-[4/3] bg-muted rounded-lg flex items-center justify-center overflow-hidden"
+                className="relative aspect-[3/4] w-full shrink-0 overflow-hidden rounded-xl bg-muted ring-1 ring-border sm:w-36"
               >
                 {perfume.imageUrl ? (
                   <img
                     src={perfume.imageUrl}
                     alt={perfume.name[loc]}
                     loading="lazy"
-                    className="object-cover w-full h-full"
+                    className="h-full w-full object-cover transition-transform duration-500 hover:scale-105"
                   />
                 ) : (
-                  <div className="w-full h-full flex items-center justify-center text-zinc-300">
+                  <div className="flex h-full w-full items-center justify-center text-muted-foreground/40">
                     <svg
                       xmlns="http://www.w3.org/2000/svg"
                       width="32"
@@ -154,42 +155,40 @@ export default async function BoxDetailPage({
                 )}
               </Link>
 
-              <div className="flex-1 flex flex-col justify-center">
-                <div className="flex items-start justify-between gap-4 mb-2">
+              <div className="flex flex-1 flex-col justify-center">
+                <div className="mb-2 flex items-start justify-between gap-4">
                   <Link
                     href={`/${locale}/parfums/${perfume.id}`}
-                    className="hover:underline underline-offset-4 decoration-1"
+                    className="underline-offset-4 decoration-accent/40 hover:underline"
                   >
-                    <h3 className="text-xl font-display font-semibold text-zinc-900">
+                    <h3 className="font-display text-xl font-medium text-foreground">
                       {perfume.name[loc]}
                     </h3>
                   </Link>
                   {!perfume.inStock && (
-                    <span className="text-red-600 text-sm font-medium bg-red-50 px-2 py-1 rounded shrink-0">
+                    <span className="shrink-0 rounded-full bg-destructive/10 px-2.5 py-1 text-xs font-medium text-destructive">
                       {tProduct("outOfStock")}
                     </span>
                   )}
                 </div>
 
-                <div className="flex gap-2 mb-4">
-                  <Badge variant="secondary" className="font-normal text-xs">
+                <div className="mb-4 flex flex-wrap gap-2">
+                  <Badge variant="secondary" className="text-xs font-normal">
                     {perfume.scentFamily}
                   </Badge>
-                  <Badge variant="outline" className="font-normal text-xs">
+                  <Badge variant="outline" className="text-xs font-normal">
                     {perfume.concentration}
                   </Badge>
                 </div>
 
-                <p className="text-zinc-600 leading-relaxed text-sm sm:text-base">
+                <p className="text-sm leading-relaxed text-muted-foreground sm:text-base">
                   {perfume.description[loc]}
                 </p>
               </div>
-            </div>
+            </article>
           ))}
         </div>
       </section>
     </div>
   );
 }
-
-

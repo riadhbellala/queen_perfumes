@@ -8,6 +8,7 @@ import { useCart } from "@/context/CartContext";
 import { OrderReviewCards } from "@/components/shop/order-review-cards";
 import { DeliveryForm } from "@/components/shop/delivery-form";
 import { Button } from "@/components/ui/button";
+import { PageSkeleton } from "@/components/shop/page-skeleton";
 import { PackageOpen, ChevronRight } from "lucide-react";
 
 export default function CommandePage() {
@@ -23,7 +24,11 @@ export default function CommandePage() {
   }, [isHydrated, items.length, locale, router]);
 
   if (!isHydrated) {
-    return <div className="min-h-screen bg-background" />;
+    return (
+      <div className="min-h-screen bg-background">
+        <PageSkeleton rows={5} />
+      </div>
+    );
   }
 
   if (items.length === 0) {

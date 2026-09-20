@@ -38,14 +38,14 @@ export function PerfumeMultiSelect({
 
   return (
     <div className="rounded-lg border border-zinc-200">
-      <div className="flex flex-wrap items-center justify-between gap-3 border-b border-zinc-100 p-3">
-        <div className="relative flex-1">
+      <div className="flex flex-col gap-3 border-b border-zinc-100 p-3 sm:flex-row sm:flex-wrap sm:items-center sm:justify-between">
+        <div className="relative sm:flex-1">
           <Search className="absolute start-3 top-1/2 -translate-y-1/2 text-zinc-400" size={14} />
           <Input
             placeholder="Rechercher un parfum…"
             value={query}
             onChange={(e) => setQuery(e.target.value)}
-            className="h-9 rounded-md ps-8 text-sm"
+            className="h-9 w-full rounded-md ps-8 text-sm"
           />
         </div>
         <span className="shrink-0 text-sm font-medium text-zinc-600">

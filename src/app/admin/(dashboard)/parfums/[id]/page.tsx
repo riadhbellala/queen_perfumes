@@ -42,8 +42,10 @@ export default async function AdminEditPerfumePage({
         Retour aux parfums
       </Link>
 
-      <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-semibold text-zinc-900">Modifier « {data.name_fr} »</h1>
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+        <h1 className="text-xl font-semibold text-balance text-zinc-900 sm:text-2xl">
+          Modifier « {data.name_fr} »
+        </h1>
         <DeletePerfumeButtonWithRedirect
           perfumeId={data.id}
           perfumeName={data.name_fr}
@@ -51,7 +53,7 @@ export default async function AdminEditPerfumePage({
         />
       </div>
 
-      <div className="mt-6 max-w-3xl rounded-2xl border border-zinc-200 bg-white p-6">
+      <div className="mt-6 max-w-3xl">
         <PerfumeForm mode="edit" initialData={initialData} />
       </div>
     </div>

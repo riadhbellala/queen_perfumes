@@ -9,7 +9,7 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
 import { DeleteBoxButton } from "@/components/admin/delete-box-button";
-import { Pencil, Search, ShoppingBag } from "lucide-react";
+import { Pencil, Search, ShoppingBag, Trash2 } from "lucide-react";
 
 export type AdminBoxRow = {
   id: string;
@@ -42,22 +42,85 @@ export function BoxesTable({ boxes }: { boxes: AdminBoxRow[] }) {
 
   return (
     <div>
-      <div className="mb-4 flex flex-wrap items-center justify-between gap-4">
-        <div className="relative w-full max-w-xs">
+      <div className="mb-4 flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-center sm:justify-between">
+        <div className="relative w-full sm:w-auto sm:max-w-xs">
           <Search className="absolute start-3 top-1/2 -translate-y-1/2 text-zinc-400" size={16} />
           <Input
             placeholder="Rechercher une box…"
             value={query}
             onChange={(e) => setQuery(e.target.value)}
-            className="h-10 rounded-lg ps-9"
+            className="h-10 w-full rounded-lg ps-9"
           />
         </div>
-        <Link href="/admin/boxes/nouveau">
-          <Button className="bg-zinc-900 text-white hover:bg-zinc-800">Nouveau Box</Button>
+        <Link href="/admin/boxes/nouveau" className="w-full sm:w-auto">
+          <Button className="w-full bg-zinc-900 text-white hover:bg-zinc-800 sm:w-auto">Nouvelle box</Button>
         </Link>
       </div>
 
-      <div className="overflow-hidden rounded-2xl border border-zinc-200 bg-white">
+      {/* Mobile: stacked cards — a wide data table forces sideways scrolling
+          on a phone. Desktop keeps the real table below md:. */}
+      <div className="flex flex-col gap-3 md:hidden">
+        {filtered.map((box) => (
+          <div key={box.id} className="rounded-xl border border-zinc-200 bg-white p-3">
+            <div className="flex items-start gap-3">
+              <div className="flex size-14 shrink-0 items-center justify-center overflow-hidden rounded-lg bg-zinc-50">
+                {box.image_url ? (
+                  // eslint-disable-next-line @next/next/no-img-element
+                  <img src={box.image_url} alt="" loading="lazy" className="h-full w-full object-cover" />
+                ) : (
+                  <ShoppingBag className="text-zinc-300" size={18} />
+                )}
+              </div>
+              <div className="min-w-0 flex-1">
+                <p className="truncate font-medium text-zinc-900">{box.name_fr}</p>
+                <div className="mt-1.5 flex flex-wrap items-center gap-x-2 gap-y-1 text-sm">
+                  <span className="font-semibold text-zinc-900">{box.price} DA</span>
+                  <span className="text-zinc-300">·</span>
+                  <span className="text-zinc-500">
+                    {box.perfumeCount} parfum{box.perfumeCount > 1 ? "s" : ""}
+                  </span>
+                </div>
+              </div>
+              <Switch
+                checked={box.is_active}
+                onCheckedChange={(v) => toggleActive(box.id, v)}
+                className="shrink-0"
+              />
+            </div>
+            <div className="mt-3 flex items-center gap-2 border-t border-zinc-100 pt-3">
+              <Link href={`/admin/boxes/${box.id}`} className="flex-1">
+                <Button variant="outline" className="h-10 w-full gap-2">
+                  <Pencil size={14} />
+                  Modifier
+                </Button>
+              </Link>
+              <DeleteBoxButton
+                packId={box.id}
+                packName={box.name_fr}
+                imageUrl={box.image_url}
+                onDeleted={() => setRows((prev) => prev.filter((p) => p.id !== box.id))}
+                trigger={
+                  <Button
+                    type="button"
+                    variant="outline"
+                    aria-label="Supprimer"
+                    className="h-10 w-10 shrink-0 p-0 text-red-600 hover:bg-red-50 hover:text-red-700"
+                  >
+                    <Trash2 size={16} />
+                  </Button>
+                }
+              />
+            </div>
+          </div>
+        ))}
+        {filtered.length === 0 && (
+          <p className="rounded-xl border border-zinc-200 bg-white py-10 text-center text-sm text-zinc-500">
+            Aucune box trouvée.
+          </p>
+        )}
+      </div>
+
+      <div className="hidden overflow-hidden rounded-2xl border border-zinc-200 bg-white md:block">
         <Table>
           <TableHeader>
             <TableRow>

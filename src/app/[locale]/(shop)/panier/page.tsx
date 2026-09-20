@@ -7,6 +7,7 @@ import { useCart } from "@/context/CartContext";
 import { lineImage, lineUnitPrice } from "@/lib/cart-line";
 import { Price } from "@/components/shop/price";
 import { Button } from "@/components/ui/button";
+import { PageSkeleton } from "@/components/shop/page-skeleton";
 import { Minus, Plus, ShoppingBag, Trash2, PackageOpen } from "lucide-react";
 import type { CartItem } from "@/types";
 
@@ -24,7 +25,11 @@ export default function PanierPage() {
   const tPanier = useTranslations("Panier");
 
   if (!isHydrated) {
-    return <div className="min-h-screen bg-background" />;
+    return (
+      <div className="min-h-screen bg-background">
+        <PageSkeleton rows={4} />
+      </div>
+    );
   }
 
   if (items.length === 0) {
@@ -79,7 +84,7 @@ export default function PanierPage() {
             return (
               <div
                 key={item.cartLineId}
-                className="flex flex-wrap items-center gap-4 bg-card rounded-2xl border border-border p-4"
+                className="flex flex-wrap items-center gap-4 rounded-2xl border border-border bg-card p-4 transition-shadow duration-200 hover:shadow-sm"
               >
                 <div className="flex min-w-[180px] flex-1 items-center gap-4">
                   <div className="size-16 shrink-0 overflow-hidden rounded-xl bg-muted">
@@ -105,7 +110,7 @@ export default function PanierPage() {
                       type="button"
                       onClick={() => updateQuantity(item.cartLineId, item.quantity - 1)}
                       disabled={item.quantity <= 1}
-                      className="size-7 flex items-center justify-center rounded-full text-zinc-500 hover:bg-muted disabled:opacity-30 transition-colors"
+                      className="flex size-8 items-center justify-center rounded-full text-muted-foreground transition-colors hover:bg-muted hover:text-foreground active:scale-95 disabled:opacity-30"
                       aria-label="-"
                     >
                       <Minus size={14} />
@@ -114,7 +119,7 @@ export default function PanierPage() {
                     <button
                       type="button"
                       onClick={() => updateQuantity(item.cartLineId, item.quantity + 1)}
-                      className="size-7 flex items-center justify-center rounded-full text-zinc-500 hover:bg-muted transition-colors"
+                      className="flex size-8 items-center justify-center rounded-full text-muted-foreground transition-colors hover:bg-muted hover:text-foreground active:scale-95"
                       aria-label="+"
                     >
                       <Plus size={14} />

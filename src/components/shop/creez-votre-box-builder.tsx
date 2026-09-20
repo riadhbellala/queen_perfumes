@@ -8,14 +8,8 @@ import { useCart } from "@/context/CartContext";
 import { toCartPerfumeSummary } from "@/lib/cart-line";
 import { Price } from "@/components/shop/price";
 import { Button } from "@/components/ui/button";
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "@/components/ui/dialog";
-import { Check, CheckCircle2, ShoppingBag, Info, ChevronLeft, ChevronRight, X } from "lucide-react";
+import { PerfumePickerCard } from "@/components/shop/box-picker-card";
+import { CheckCircle2, ChevronLeft, ChevronRight, X } from "lucide-react";
 
 // Real product photography for each box size, one per pricing tier.
 const SIZE_IMAGES: Record<number, string> = {
@@ -163,139 +157,6 @@ function SizeCard({
         />
       </div>
     </button>
-  );
-}
-
-// ─── Step 2: Perfume picker card ─────────────────────────────────────────────
-function PerfumePickerCard({
-  perfume,
-  locale,
-  selected,
-  disabled,
-  onToggle,
-  selectedLabel,
-  outOfStockLabel,
-}: {
-  perfume: Perfume;
-  locale: "fr" | "ar";
-  selected: boolean;
-  disabled: boolean;
-  onToggle: () => void;
-  selectedLabel: string;
-  outOfStockLabel: string;
-}) {
-  const isUnavailable = !perfume.inStock;
-  const isDisabledNotSelected = disabled && !selected;
-
-  return (
-    <div className="relative">
-      <button
-        onClick={() => !isUnavailable && onToggle()}
-        disabled={isDisabledNotSelected || isUnavailable}
-        className={`group relative w-full overflow-hidden rounded-xl text-start transition-all duration-200 ${
-          selected
-            ? "ring-2 ring-primary shadow-lg"
-            : isDisabledNotSelected || isUnavailable
-            ? "ring-1 ring-border opacity-40 cursor-not-allowed"
-            : "ring-1 ring-border hover:shadow-md hover:ring-primary/50 cursor-pointer"
-        }`}
-      >
-        {/* Image */}
-        <div className="relative aspect-[3/4] overflow-hidden bg-muted">
-          {perfume.imageUrl ? (
-            <img
-              src={perfume.imageUrl}
-              alt={perfume.name[locale]}
-              loading="lazy"
-              className="object-cover w-full h-full transition-transform duration-500 group-hover:scale-105"
-            />
-          ) : (
-            <div className="w-full h-full flex items-center justify-center text-zinc-300">
-              <ShoppingBag size={40} />
-            </div>
-          )}
-
-          {selected && <div className="absolute inset-0 bg-primary/10" />}
-
-          {/* Out-of-stock always wins over the selected badge — the two
-              can't coexist in practice, but keeping an explicit priority
-              avoids ever stacking both. */}
-          {isUnavailable ? (
-            <span className="absolute start-2 top-2 z-10 rounded-full bg-red-950/85 px-2.5 py-1 text-[10px] font-semibold tracking-wide text-white shadow-sm">
-              {outOfStockLabel}
-            </span>
-          ) : (
-            selected && (
-              <span className="absolute start-2 top-2 z-10 grid size-6 place-items-center rounded-full bg-primary text-primary-foreground shadow-md">
-                <Check size={12} strokeWidth={3} />
-                <span className="sr-only">{selectedLabel}</span>
-              </span>
-            )
-          )}
-        </div>
-
-        {/* Caption */}
-        <div className="p-3">
-          <p className="font-display text-sm font-semibold leading-tight text-foreground">{perfume.name[locale]}</p>
-          <p className="mt-0.5 text-[11px] uppercase tracking-wide text-zinc-400">
-            {perfume.scentFamily} · {perfume.concentration}
-          </p>
-        </div>
-      </button>
-
-      {/* Info Dialog */}
-      <Dialog>
-        <DialogTrigger
-          render={
-            <button className="absolute end-2 top-2 z-10 rounded-full bg-white/80 p-1.5 text-zinc-600 shadow-sm ring-1 ring-black/5 backdrop-blur-md transition-colors hover:bg-white hover:text-zinc-900 focus:outline-none" />
-          }
-        >
-          <Info size={15} />
-        </DialogTrigger>
-        <DialogContent className="sm:max-w-md rounded-3xl">
-          <DialogHeader>
-            <DialogTitle className="text-2xl font-heading mb-2">{perfume.name[locale]}</DialogTitle>
-          </DialogHeader>
-          <div className="mt-4">
-            {perfume.imageUrl && (
-              <img
-                src={perfume.imageUrl}
-                alt={perfume.name[locale]}
-                loading="lazy"
-                className="w-full h-64 object-cover rounded-xl mb-6"
-              />
-            )}
-            <div className="flex items-center gap-3 mb-4">
-              <span className="bg-muted text-zinc-600 px-3 py-1 rounded-full text-xs font-semibold tracking-wide">
-                {perfume.scentFamily}
-              </span>
-              <span className="bg-muted text-zinc-600 px-3 py-1 rounded-full text-xs font-semibold tracking-wide">
-                {perfume.concentration}
-              </span>
-            </div>
-            <p className="text-zinc-600 leading-relaxed text-sm">
-              {perfume.description[locale]}
-            </p>
-          </div>
-          <div className="mt-6">
-            <Button
-              onClick={() => {
-                if (!isUnavailable && (!isDisabledNotSelected || selected)) {
-                  onToggle();
-                }
-              }}
-              disabled={isUnavailable || (isDisabledNotSelected && !selected)}
-              size="lg"
-              className={`w-full h-12 rounded-full font-semibold ${selected ? "bg-red-50 text-red-600 hover:bg-red-100" : "bg-primary text-primary-foreground hover:bg-primary/90"}`}
-            >
-              {selected
-                ? (locale === "fr" ? "Retirer de la box" : "أزل من المجموعة")
-                : (locale === "fr" ? "Ajouter à la box" : "أضف إلى المجموعة")}
-            </Button>
-          </div>
-        </DialogContent>
-      </Dialog>
-    </div>
   );
 }
 
@@ -498,7 +359,7 @@ export function CreezVotreBoxBuilder({
               </div>
             </div>
 
-            <div className="stagger-fade grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6">
+            <div className="stagger-fade grid grid-cols-2 gap-x-[14px] gap-y-9 md:grid-cols-3 md:gap-x-5 md:gap-y-11">
               {perfumes.map((perfume) => (
                 <PerfumePickerCard
                   key={perfume.id}
@@ -507,8 +368,9 @@ export function CreezVotreBoxBuilder({
                   selected={selectedPerfumeIds.includes(perfume.id)}
                   disabled={selectedPerfumeIds.length >= (selectedSize ?? 0) && !selectedPerfumeIds.includes(perfume.id)}
                   onToggle={() => togglePerfume(perfume.id)}
-                  selectedLabel={locale === "fr" ? "Sélectionné" : "محدد"}
-                  outOfStockLabel={locale === "fr" ? "Rupture" : "نفد"}
+                  addLabel={t("addStatus")}
+                  selectedLabel={t("selectedStatus")}
+                  outOfStockLabel={t("outOfStock")}
                 />
               ))}
             </div>

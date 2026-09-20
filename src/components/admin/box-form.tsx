@@ -12,12 +12,13 @@ import { compressImage } from "@/lib/compress-image";
 // bucket, box images just live alongside perfume images in it.
 import { uploadPerfumeImage, deletePerfumeImage } from "@/lib/supabase/storage";
 import { PerfumeMultiSelect, type SelectablePerfume } from "@/components/admin/perfume-multi-select";
+import { FormSection } from "@/components/admin/form-section";
 import { Field, FieldError, FieldLabel } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
-import { ShoppingBag, Loader2 } from "lucide-react";
+import { ShoppingBag, Loader2, Upload } from "lucide-react";
 
 const boxSchema = z.object({
   name_fr: z.string().trim().min(1, "Le nom en français est requis."),
@@ -172,68 +173,75 @@ export function BoxForm({
   }
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)} noValidate className="flex flex-col gap-6">
-      <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
-        <Field data-invalid={!!errors.name_fr}>
-          <FieldLabel htmlFor="name_fr">Nom (Français)</FieldLabel>
-          <Input id="name_fr" className="h-11 rounded-lg" {...register("name_fr")} />
-          <FieldError errors={[errors.name_fr]} />
-        </Field>
-        <Field data-invalid={!!errors.name_ar}>
-          <FieldLabel htmlFor="name_ar">Nom (Arabe)</FieldLabel>
-          <Input id="name_ar" dir="rtl" className="h-11 rounded-lg" {...register("name_ar")} />
-          <FieldError errors={[errors.name_ar]} />
-        </Field>
-      </div>
+    <form onSubmit={handleSubmit(onSubmit)} noValidate className="flex flex-col gap-5">
+      <FormSection title="Nom" description="Le nom de la box tel qu'il apparaîtra sur le site, dans chaque langue.">
+        <div className="grid grid-cols-1 gap-5 sm:grid-cols-2">
+          <Field data-invalid={!!errors.name_fr}>
+            <FieldLabel htmlFor="name_fr">
+              Français <span className="text-zinc-400">· FR</span>
+            </FieldLabel>
+            <Input id="name_fr" className="h-11 rounded-lg" {...register("name_fr")} />
+            <FieldError errors={[errors.name_fr]} />
+          </Field>
+          <Field data-invalid={!!errors.name_ar}>
+            <FieldLabel htmlFor="name_ar">
+              Arabe <span className="text-zinc-400">· AR</span>
+            </FieldLabel>
+            <Input id="name_ar" dir="rtl" className="h-11 rounded-lg" {...register("name_ar")} />
+            <FieldError errors={[errors.name_ar]} />
+          </Field>
+        </div>
+      </FormSection>
 
-      <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
-        <Field data-invalid={!!errors.description_fr}>
-          <FieldLabel htmlFor="description_fr">Description (Français)</FieldLabel>
-          <Textarea id="description_fr" rows={4} className="rounded-lg" {...register("description_fr")} />
-          <FieldError errors={[errors.description_fr]} />
-        </Field>
-        <Field data-invalid={!!errors.description_ar}>
-          <FieldLabel htmlFor="description_ar">Description (Arabe)</FieldLabel>
-          <Textarea
-            id="description_ar"
-            dir="rtl"
-            rows={4}
-            className="rounded-lg"
-            {...register("description_ar")}
-          />
-          <FieldError errors={[errors.description_ar]} />
-        </Field>
-      </div>
+      <FormSection title="Description" description="Affichée sur la fiche produit de la box.">
+        <div className="grid grid-cols-1 gap-5 sm:grid-cols-2">
+          <Field data-invalid={!!errors.description_fr}>
+            <FieldLabel htmlFor="description_fr">
+              Français <span className="text-zinc-400">· FR</span>
+            </FieldLabel>
+            <Textarea id="description_fr" rows={4} className="rounded-lg" {...register("description_fr")} />
+            <FieldError errors={[errors.description_fr]} />
+          </Field>
+          <Field data-invalid={!!errors.description_ar}>
+            <FieldLabel htmlFor="description_ar">
+              Arabe <span className="text-zinc-400">· AR</span>
+            </FieldLabel>
+            <Textarea
+              id="description_ar"
+              dir="rtl"
+              rows={4}
+              className="rounded-lg"
+              {...register("description_ar")}
+            />
+            <FieldError errors={[errors.description_ar]} />
+          </Field>
+        </div>
+      </FormSection>
 
-      {/* Price is independent on purpose — it is NOT derived from the
-          selected perfumes' prices, and nothing here suggests it should
-          match their sum. */}
-      <div className="grid grid-cols-2 gap-6 sm:grid-cols-4">
-        <Field data-invalid={!!errors.price}>
-          <FieldLabel htmlFor="price">Prix (DA)</FieldLabel>
-          <Input
-            id="price"
-            type="number"
-            step="1"
-            min="0"
-            className="h-11 rounded-lg"
-            {...register("price", { valueAsNumber: true })}
-          />
-          <FieldError errors={[errors.price]} />
-        </Field>
-      </div>
+      <FormSection
+        title="Prix"
+        description="Indépendant du prix des parfums sélectionnés — n'est pas recalculé automatiquement."
+      >
+        <div className="grid grid-cols-2 gap-5 sm:grid-cols-4">
+          <Field data-invalid={!!errors.price}>
+            <FieldLabel htmlFor="price">Prix (DA)</FieldLabel>
+            <Input
+              id="price"
+              type="number"
+              inputMode="numeric"
+              step="1"
+              min="0"
+              className="h-11 rounded-lg"
+              {...register("price", { valueAsNumber: true })}
+            />
+            <FieldError errors={[errors.price]} />
+          </Field>
+        </div>
+      </FormSection>
 
-      <Field orientation="horizontal" className="items-center gap-3">
-        <Switch checked={isActive} onCheckedChange={(v) => setValue("is_active", v)} id="is_active" />
-        <FieldLabel htmlFor="is_active" className="cursor-pointer">
-          Actif (visible sur le site)
-        </FieldLabel>
-      </Field>
-
-      <Field>
-        <FieldLabel htmlFor="image">Photo</FieldLabel>
-        <div className="flex items-center gap-4">
-          <div className="flex size-24 shrink-0 items-center justify-center overflow-hidden rounded-xl border border-zinc-200 bg-zinc-50">
+      <FormSection title="Photo" description="Compressée et convertie automatiquement au format WebP.">
+        <div className="flex flex-col items-center gap-4 sm:flex-row sm:items-start">
+          <div className="flex size-28 shrink-0 items-center justify-center overflow-hidden rounded-xl border border-zinc-200 bg-zinc-50">
             {previewUrl ? (
               // eslint-disable-next-line @next/next/no-img-element
               <img src={previewUrl} alt="" className="h-full w-full object-cover" />
@@ -241,13 +249,20 @@ export function BoxForm({
               <ShoppingBag className="text-zinc-300" size={28} />
             )}
           </div>
-          <div className="flex flex-col gap-2">
-            <Input
+          <div className="flex w-full flex-col items-center gap-2 sm:items-start">
+            <label
+              htmlFor="image"
+              className="inline-flex h-11 w-full cursor-pointer items-center justify-center gap-2 rounded-lg border border-zinc-200 px-4 text-sm font-medium text-zinc-700 transition-colors hover:bg-zinc-50 sm:w-auto"
+            >
+              <Upload size={16} />
+              {previewUrl ? "Changer la photo" : "Choisir une photo"}
+            </label>
+            <input
               id="image"
               type="file"
               accept="image/*"
               onChange={handleImageChange}
-              className="h-11 rounded-lg"
+              className="sr-only"
             />
             {compressing && (
               <p className="flex items-center gap-1.5 text-xs text-zinc-500">
@@ -258,10 +273,12 @@ export function BoxForm({
             {!compressing && sizeInfo && <p className="text-xs text-zinc-500">{sizeInfo}</p>}
           </div>
         </div>
-      </Field>
+      </FormSection>
 
-      <Field>
-        <FieldLabel>Parfums inclus</FieldLabel>
+      <FormSection
+        title="Parfums inclus"
+        description={`Sélectionnez au moins ${MIN_PERFUMES} parfums pour composer cette box.`}
+      >
         <PerfumeMultiSelect
           perfumes={perfumes}
           selectedIds={selectedIds}
@@ -271,16 +288,30 @@ export function BoxForm({
           }}
         />
         {selectionError && <p className="text-sm text-destructive">{selectionError}</p>}
-      </Field>
+      </FormSection>
 
-      <div className="flex justify-end gap-3 border-t border-zinc-100 pt-6">
-        <Button type="button" variant="outline" onClick={() => router.push("/admin/boxes")}>
+      <FormSection title="Visibilité" description="Une box inactive n'apparaît nulle part sur le site.">
+        <Field orientation="horizontal" className="items-center gap-3">
+          <Switch checked={isActive} onCheckedChange={(v) => setValue("is_active", v)} id="is_active" />
+          <FieldLabel htmlFor="is_active" className="cursor-pointer">
+            {isActive ? "Actif — visible sur le site" : "Inactif — masqué du site"}
+          </FieldLabel>
+        </Field>
+      </FormSection>
+
+      <div className="flex flex-col-reverse gap-3 border-t border-zinc-100 pt-6 sm:flex-row sm:justify-end">
+        <Button
+          type="button"
+          variant="outline"
+          className="w-full sm:w-auto"
+          onClick={() => router.push("/admin/boxes")}
+        >
           Annuler
         </Button>
         <Button
           type="submit"
           disabled={isSubmitting || compressing}
-          className="bg-zinc-900 text-white hover:bg-zinc-800 disabled:opacity-60"
+          className="w-full bg-zinc-900 text-white hover:bg-zinc-800 disabled:opacity-60 sm:w-auto"
         >
           {isSubmitting ? "Enregistrement…" : mode === "create" ? "Créer la box" : "Enregistrer"}
         </Button>

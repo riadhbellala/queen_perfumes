@@ -5,9 +5,38 @@ import { supabasePublic } from "@/lib/supabase/public";
 import { mapPackRow, mapPerfumeRow, mapPackSizePricingRow } from "@/lib/supabase/mappers";
 import { BoxesCarousel } from "@/components/shop/boxes-carousel";
 import { HomepageBoxBuilder } from "@/components/shop/homepage-box-builder";
-import { Price } from "@/components/shop/price";
 import { InstagramIcon, TikTokIcon } from "@/components/shop/social-icons";
 import { FlowButton } from "@/components/ui/flow-button";
+import { ArrowRight } from "lucide-react";
+
+// Square, uppercase, hairline-bordered secondary CTA — matches the
+// "perfume house" square-corner language the box-builder section (below)
+// established, instead of the round animated FlowButton (kept only for the
+// hero's own primary CTA on the photo). Used by both catalog-preview
+// sections' headers so their CTAs visually match each other, not just the
+// section further down the page.
+function SectionCta({
+  href,
+  locale,
+  children,
+}: {
+  href: string;
+  locale: string;
+  children: React.ReactNode;
+}) {
+  return (
+    <Link
+      href={href}
+      className="group inline-flex h-12 shrink-0 items-center gap-2 border border-foreground/25 px-7 text-[12px] font-semibold uppercase tracking-[0.16em] text-foreground transition-colors hover:border-primary hover:bg-primary hover:text-primary-foreground"
+    >
+      {children}
+      <ArrowRight
+        size={14}
+        className={`transition-transform group-hover:translate-x-1 ${locale === "ar" ? "rotate-180 group-hover:-translate-x-1" : ""}`}
+      />
+    </Link>
+  );
+}
 
 // Catalog data changes rarely (admin edits), so this page is ISR-cached
 // instead of hitting Supabase fresh on every visit — see supabase/public.ts
@@ -22,7 +51,6 @@ export default async function ShopHomepage({
   const { locale } = await params;
   const tHome = await getTranslations("Home");
   const tHero = await getTranslations("Hero");
-  const tPackBuilder = await getTranslations("PackBuilder");
 
   const supabase = supabasePublic;
   const [{ data: packRows }, { data: perfumeRows }, { data: pricingRows }] = await Promise.all([
@@ -42,23 +70,12 @@ export default async function ShopHomepage({
 
   const recommendedPacks = allPacks.slice(0, 4);
 
-  const startingPrice = packSizePricing[0]?.price ?? 0;
-
   return (
     <div className="flex-1 w-full flex flex-col">
       {/* Hero section */}
       <section className="min-h-[45vh] md:min-h-[55vh] w-full bg-[url('/assets/herosection/tbq.webp')] bg-cover bg-center flex flex-col items-center justify-center text-center px-6 relative py-12">
         {/* Darker overlay so text is readable */}
         <div className="absolute inset-0 bg-black/40" />
-
-        {/* Pricing caption — a single-line pill, matching the badge style used elsewhere (e.g. /boxes hero) */}
-        <div className="hidden md:inline-flex absolute start-8 lg:start-14 bottom-10 z-10 items-center gap-2 rounded-full border border-white/20 bg-white/10 px-4 py-2 backdrop-blur-md">
-          <Price amount={startingPrice} className="text-base font-semibold text-white" />
-          <span className="text-white/40">·</span>
-          <span className="text-sm text-white/70">
-            {locale === "fr" ? "pour 2 parfums" : "لعطرين"}
-          </span>
-        </div>
 
         <div className="relative z-10 flex flex-col items-center gap-8 w-full max-w-2xl">
           <div className="flex flex-col items-center">
@@ -119,30 +136,31 @@ export default async function ShopHomepage({
           actually span the page; the heading/CTA stay in the usual
           max-w-7xl reading column. */}
       <section className="py-14 md:py-16 w-full">
-        <div className="max-w-7xl mx-auto px-6 lg:px-8 text-center mb-10">
-          <h2 className="text-4xl md:text-5xl font-heading text-zinc-900 mb-4">{tHome("recommendedPacksTitle")}</h2>
-          <p className="text-zinc-500 max-w-xl mx-auto">{tHome("packsSubtitle")}</p>
+        <div className="max-w-7xl mx-auto px-6 lg:px-8">
+          <div className="mb-10 flex flex-col items-center gap-6 text-center md:flex-row md:items-center md:justify-between md:text-start">
+            <div className="min-w-0">
+              <h2 className="font-display text-4xl text-foreground md:text-5xl">{tHome("recommendedPacksTitle")}</h2>
+              <p className="mx-auto mt-4 max-w-xl text-muted-foreground md:mx-0">{tHome("packsSubtitle")}</p>
+            </div>
+            <SectionCta href={`/${locale}/boxes`} locale={locale}>
+              {tHome("discoverMorePacks")}
+            </SectionCta>
+          </div>
         </div>
-        <div className="mx-auto w-[90vw] max-w-[1800px]">
+        <div className="mx-auto mt-10 w-[90vw] max-w-[1800px]">
           <BoxesCarousel packs={recommendedPacks} />
         </div>
-        <div className="mt-10 text-center">
-          <Link href={`/${locale}/boxes`} className="inline-flex">
-            <FlowButton text={tHome("discoverMorePacks")} />
-          </Link>
-        </div>
       </section>
 
-      {/* Pack Builder Section — same background as the section above, no
-          divider, so the page reads as one continuous surface */}
-      <section id="pack-builder" className="py-14 md:py-16 px-6 lg:px-8 max-w-7xl mx-auto w-full mb-10">
-        <div className="text-center mb-10">
-          <h2 className="text-4xl md:text-5xl font-heading text-zinc-900 mb-4">{tPackBuilder("title")}</h2>
-          <p className="text-zinc-500 max-w-xl mx-auto">{tPackBuilder("subtitle")}</p>
-        </div>
-
+      {/* Pack Builder Section — full-bleed (its own bg-secondary band,
+          own padding/heading/subtitle in its left column), flush against
+          the section above with no wrapping max-w-7xl/gap: the previous
+          wrapper duplicated the component's own "Créez votre box" title
+          and constrained its 400px/800px desktop columns to a narrower
+          box than they were designed for. */}
+      <div id="pack-builder">
         <HomepageBoxBuilder perfumes={allPerfumes} pricing={packSizePricing} />
-      </section>
+      </div>
     </div>
   );
 }

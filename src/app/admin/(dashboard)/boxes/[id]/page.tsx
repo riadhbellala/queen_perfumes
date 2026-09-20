@@ -64,12 +64,14 @@ export default async function AdminEditBoxPage({
         Retour aux boxes
       </Link>
 
-      <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-semibold text-zinc-900">Modifier « {pack.name_fr} »</h1>
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+        <h1 className="text-xl font-semibold text-balance text-zinc-900 sm:text-2xl">
+          Modifier « {pack.name_fr} »
+        </h1>
         <DeleteBoxButtonWithRedirect packId={pack.id} packName={pack.name_fr} imageUrl={pack.image_url} />
       </div>
 
-      <div className="mt-6 max-w-3xl rounded-2xl border border-zinc-200 bg-white p-6">
+      <div className="mt-6 max-w-3xl">
         <BoxForm mode="edit" perfumes={selectablePerfumes} initialData={initialData} />
       </div>
     </div>

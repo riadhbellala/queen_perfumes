@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useMemo, useState } from "react";
+import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { useLocale, useTranslations } from "next-intl";
 import type { Perfume } from "@/types";
@@ -15,7 +16,14 @@ import {
   SheetTitle,
   SheetTrigger,
 } from "@/components/ui/sheet";
-import { SlidersHorizontal } from "lucide-react";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { SlidersHorizontal, X } from "lucide-react";
 
 type SortKey = "relevance" | "price-asc" | "price-desc" | "name-asc";
 
@@ -33,10 +41,13 @@ function FilterGroup({
   if (options.length === 0) return null;
   return (
     <div>
-      <p className="text-sm font-semibold text-zinc-900 mb-3">{label}</p>
+      <p className="mb-3 text-sm font-semibold text-foreground">{label}</p>
       <div className="flex flex-col gap-2.5">
         {options.map((option) => (
-          <label key={option} className="flex items-center gap-2.5 cursor-pointer text-sm text-zinc-600">
+          <label
+            key={option}
+            className="flex cursor-pointer items-center gap-2.5 text-sm text-muted-foreground transition-colors hover:text-foreground"
+          >
             <Checkbox
               checked={selected.includes(option)}
               onCheckedChange={() => onToggle(option)}
@@ -52,9 +63,6 @@ function FilterGroup({
 export function PerfumesBrowser({ perfumes }: { perfumes: Perfume[] }) {
   const locale = useLocale() as "fr" | "ar";
   const t = useTranslations("Perfumes");
-  // Pre-filter from the drawer's search box (?q=<value>) — reactive to the
-  // URL, no local state needed since there's no on-page search input to
-  // desync from it.
   const searchParams = useSearchParams();
   const query = searchParams.get("q") ?? "";
 
@@ -116,6 +124,11 @@ export function PerfumesBrowser({ perfumes }: { perfumes: Perfume[] }) {
     { key: "name-asc", label: t("sortNameAsc") },
   ];
 
+  const activeFilterCount =
+    selectedFamilies.length +
+    selectedConcentrations.length +
+    (priceRange[0] !== priceBounds.min || priceRange[1] !== priceBounds.max ? 1 : 0);
+
   const filtersContent = (
     <div className="flex flex-col gap-8">
       <FilterGroup
@@ -132,7 +145,7 @@ export function PerfumesBrowser({ perfumes }: { perfumes: Perfume[] }) {
       />
       {priceBounds.max > priceBounds.min && (
         <div>
-          <p className="text-sm font-semibold text-zinc-900 mb-4">
+          <p className="mb-4 text-sm font-semibold text-foreground">
             {t("price", { min: priceRange[0], max: priceRange[1] })}
           </p>
           <Slider
@@ -147,7 +160,7 @@ export function PerfumesBrowser({ perfumes }: { perfumes: Perfume[] }) {
       <button
         type="button"
         onClick={resetFilters}
-        className="text-sm font-medium text-zinc-500 hover:text-zinc-900 transition-colors text-start"
+        className="text-start text-sm font-medium text-muted-foreground transition-colors hover:text-foreground"
       >
         {t("resetFilters")}
       </button>
@@ -155,26 +168,50 @@ export function PerfumesBrowser({ perfumes }: { perfumes: Perfume[] }) {
   );
 
   return (
-    <div className="max-w-7xl mx-auto w-full px-6 lg:px-8 py-12">
-      <div className="grid grid-cols-1 lg:grid-cols-[240px_1fr] gap-12">
+    <div className="mx-auto w-full max-w-7xl px-6 py-12 lg:px-8">
+      {query.trim() && (
+        <div className="mb-8 flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-border bg-secondary/50 px-4 py-3 sm:px-5">
+          <p className="text-sm text-foreground">
+            {t("searchResults", { query: query.trim() })}
+          </p>
+          <Link
+            href={`/${locale}/parfums`}
+            className="inline-flex items-center gap-1.5 text-sm font-medium text-muted-foreground transition-colors hover:text-foreground"
+          >
+            <X size={14} />
+            {t("clearSearch")}
+          </Link>
+        </div>
+      )}
+
+      <div className="grid grid-cols-1 gap-12 lg:grid-cols-[240px_1fr]">
         {/* Desktop filter sidebar */}
-        <aside className="hidden lg:block sticky top-24 self-start">{filtersContent}</aside>
+        <aside className="sticky top-24 hidden self-start lg:block">{filtersContent}</aside>
 
         <div>
           {/* Sort bar + mobile filter trigger */}
-          <div className="flex items-center justify-between gap-4 mb-8">
-            <p className="text-sm text-zinc-500 font-medium">
+          <div className="mb-8 flex flex-wrap items-center justify-between gap-4">
+            <p className="text-sm font-medium text-muted-foreground">
               {t("count", { count: filtered.length })}
             </p>
             <div className="flex items-center gap-2">
               <Sheet>
                 <SheetTrigger
                   render={
-                    <Button variant="outline" size="sm" className="lg:hidden rounded-full gap-1.5" />
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      className="gap-1.5 rounded-full lg:hidden"
+                    />
                   }
                 >
                   <SlidersHorizontal size={14} />
                   {t("filters")}
+                  {activeFilterCount > 0 && (
+                    <span className="ms-0.5 inline-flex min-w-4 items-center justify-center rounded-full bg-primary px-1 text-[10px] font-bold text-primary-foreground">
+                      <bdi dir="ltr">{activeFilterCount}</bdi>
+                    </span>
+                  )}
                 </SheetTrigger>
                 <SheetContent side={locale === "ar" ? "right" : "left"} className="overflow-y-auto">
                   <SheetHeader>
@@ -184,15 +221,31 @@ export function PerfumesBrowser({ perfumes }: { perfumes: Perfume[] }) {
                 </SheetContent>
               </Sheet>
 
-              <div className="hidden sm:flex items-center gap-2 overflow-x-auto">
+              {/* Mobile sort — desktop uses pill row below */}
+              <div className="sm:hidden">
+                <Select value={sortBy} onValueChange={(v) => setSortBy(v as SortKey)}>
+                  <SelectTrigger size="sm" className="min-w-[140px] rounded-full">
+                    <SelectValue placeholder={t("sortBy")} />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {sortOptions.map(({ key, label }) => (
+                      <SelectItem key={key} value={key}>
+                        {label}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+
+              <div className="hidden items-center gap-2 overflow-x-auto sm:flex">
                 {sortOptions.map(({ key, label }) => (
                   <button
                     key={key}
                     onClick={() => setSortBy(key)}
-                    className={`shrink-0 px-4 py-2 rounded-full text-sm font-semibold transition-all ${
+                    className={`shrink-0 rounded-full px-4 py-2 text-sm font-semibold transition-all duration-200 active:scale-95 ${
                       sortBy === key
-                        ? "bg-primary text-primary-foreground shadow-md"
-                        : "bg-muted text-zinc-600 hover:bg-muted/70"
+                        ? "bg-primary text-primary-foreground shadow-sm"
+                        : "bg-muted text-muted-foreground hover:bg-muted/70 hover:text-foreground"
                     }`}
                   >
                     {label}
@@ -203,15 +256,15 @@ export function PerfumesBrowser({ perfumes }: { perfumes: Perfume[] }) {
           </div>
 
           {filtered.length === 0 ? (
-            <div className="text-center py-24">
-              <p className="text-lg font-semibold text-zinc-900 mb-2">{t("noResults")}</p>
-              <p className="text-zinc-500 mb-6">{t("noResultsDesc")}</p>
+            <div className="py-24 text-center">
+              <p className="mb-2 text-lg font-semibold text-foreground">{t("noResults")}</p>
+              <p className="mb-6 text-muted-foreground">{t("noResultsDesc")}</p>
               <Button variant="outline" onClick={resetFilters} className="rounded-full">
                 {t("resetFilters")}
               </Button>
             </div>
           ) : (
-            <div className="grid grid-cols-2 sm:grid-cols-3 gap-x-6 gap-y-10">
+            <div className="stagger-fade grid grid-cols-2 gap-x-5 gap-y-10 sm:grid-cols-3 sm:gap-x-6 md:grid-cols-3 lg:grid-cols-3">
               {filtered.map((perfume) => (
                 <ProductCard key={perfume.id} product={perfume} type="perfume" />
               ))}

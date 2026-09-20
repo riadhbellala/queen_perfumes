@@ -14,6 +14,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
+import { FormSection } from "@/components/admin/form-section";
 import {
   Select,
   SelectContent,
@@ -21,7 +22,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { ShoppingBag, Loader2 } from "lucide-react";
+import { ShoppingBag, Loader2, Upload } from "lucide-react";
 
 const CONCENTRATIONS = ["EDT", "EDP", "Parfum", "Extrait"] as const;
 
@@ -146,103 +147,111 @@ export function PerfumeForm({
   }
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)} noValidate className="flex flex-col gap-6">
-      <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
-        <Field data-invalid={!!errors.name_fr}>
-          <FieldLabel htmlFor="name_fr">Nom (Français)</FieldLabel>
-          <Input id="name_fr" className="h-11 rounded-lg" {...register("name_fr")} />
-          <FieldError errors={[errors.name_fr]} />
-        </Field>
-        <Field data-invalid={!!errors.name_ar}>
-          <FieldLabel htmlFor="name_ar">Nom (Arabe)</FieldLabel>
-          <Input id="name_ar" dir="rtl" className="h-11 rounded-lg" {...register("name_ar")} />
-          <FieldError errors={[errors.name_ar]} />
-        </Field>
-      </div>
+    <form onSubmit={handleSubmit(onSubmit)} noValidate className="flex flex-col gap-5">
+      <FormSection title="Nom" description="Le nom du parfum tel qu'il apparaîtra sur le site, dans chaque langue.">
+        <div className="grid grid-cols-1 gap-5 sm:grid-cols-2">
+          <Field data-invalid={!!errors.name_fr}>
+            <FieldLabel htmlFor="name_fr">
+              Français <span className="text-zinc-400">· FR</span>
+            </FieldLabel>
+            <Input id="name_fr" className="h-11 rounded-lg" {...register("name_fr")} />
+            <FieldError errors={[errors.name_fr]} />
+          </Field>
+          <Field data-invalid={!!errors.name_ar}>
+            <FieldLabel htmlFor="name_ar">
+              Arabe <span className="text-zinc-400">· AR</span>
+            </FieldLabel>
+            <Input id="name_ar" dir="rtl" className="h-11 rounded-lg" {...register("name_ar")} />
+            <FieldError errors={[errors.name_ar]} />
+          </Field>
+        </div>
+      </FormSection>
 
-      <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
-        <Field data-invalid={!!errors.description_fr}>
-          <FieldLabel htmlFor="description_fr">Description (Français)</FieldLabel>
-          <Textarea id="description_fr" rows={4} className="rounded-lg" {...register("description_fr")} />
-          <FieldError errors={[errors.description_fr]} />
-        </Field>
-        <Field data-invalid={!!errors.description_ar}>
-          <FieldLabel htmlFor="description_ar">Description (Arabe)</FieldLabel>
-          <Textarea
-            id="description_ar"
-            dir="rtl"
-            rows={4}
-            className="rounded-lg"
-            {...register("description_ar")}
-          />
-          <FieldError errors={[errors.description_ar]} />
-        </Field>
-      </div>
+      <FormSection title="Description" description="Affichée sur la fiche produit du parfum.">
+        <div className="grid grid-cols-1 gap-5 sm:grid-cols-2">
+          <Field data-invalid={!!errors.description_fr}>
+            <FieldLabel htmlFor="description_fr">
+              Français <span className="text-zinc-400">· FR</span>
+            </FieldLabel>
+            <Textarea id="description_fr" rows={4} className="rounded-lg" {...register("description_fr")} />
+            <FieldError errors={[errors.description_fr]} />
+          </Field>
+          <Field data-invalid={!!errors.description_ar}>
+            <FieldLabel htmlFor="description_ar">
+              Arabe <span className="text-zinc-400">· AR</span>
+            </FieldLabel>
+            <Textarea
+              id="description_ar"
+              dir="rtl"
+              rows={4}
+              className="rounded-lg"
+              {...register("description_ar")}
+            />
+            <FieldError errors={[errors.description_ar]} />
+          </Field>
+        </div>
+      </FormSection>
 
-      <div className="grid grid-cols-2 gap-6 sm:grid-cols-4">
-        <Field data-invalid={!!errors.price}>
-          <FieldLabel htmlFor="price">Prix (DA)</FieldLabel>
-          <Input
-            id="price"
-            type="number"
-            step="1"
-            min="0"
-            className="h-11 rounded-lg"
-            {...register("price", { valueAsNumber: true })}
-          />
-          <FieldError errors={[errors.price]} />
-        </Field>
-        <Field data-invalid={!!errors.stock}>
-          <FieldLabel htmlFor="stock">Stock</FieldLabel>
-          <Input
-            id="stock"
-            type="number"
-            step="1"
-            min="0"
-            className="h-11 rounded-lg"
-            {...register("stock", { valueAsNumber: true })}
-          />
-          <FieldError errors={[errors.stock]} />
-        </Field>
-        <Field data-invalid={!!errors.scent_family}>
-          <FieldLabel htmlFor="scent_family">Famille olfactive</FieldLabel>
-          <Input id="scent_family" className="h-11 rounded-lg" {...register("scent_family")} />
-          <FieldError errors={[errors.scent_family]} />
-        </Field>
-        <Field data-invalid={!!errors.concentration}>
-          <FieldLabel htmlFor="concentration">Concentration</FieldLabel>
-          <Select
-            value={concentration}
-            onValueChange={(v) =>
-              setValue("concentration", v as PerfumeFormValues["concentration"], { shouldValidate: true })
-            }
-          >
-            <SelectTrigger id="concentration" className="h-11 w-full rounded-lg">
-              <SelectValue placeholder="Choisir" />
-            </SelectTrigger>
-            <SelectContent>
-              {CONCENTRATIONS.map((c) => (
-                <SelectItem key={c} value={c}>
-                  {c}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-          <FieldError errors={[errors.concentration]} />
-        </Field>
-      </div>
+      <FormSection title="Caractéristiques & prix">
+        <div className="grid grid-cols-2 gap-5 sm:grid-cols-4">
+          <Field data-invalid={!!errors.price}>
+            <FieldLabel htmlFor="price">Prix (DA)</FieldLabel>
+            <Input
+              id="price"
+              type="number"
+              inputMode="numeric"
+              step="1"
+              min="0"
+              className="h-11 rounded-lg"
+              {...register("price", { valueAsNumber: true })}
+            />
+            <FieldError errors={[errors.price]} />
+          </Field>
+          <Field data-invalid={!!errors.stock}>
+            <FieldLabel htmlFor="stock">Stock</FieldLabel>
+            <Input
+              id="stock"
+              type="number"
+              inputMode="numeric"
+              step="1"
+              min="0"
+              className="h-11 rounded-lg"
+              {...register("stock", { valueAsNumber: true })}
+            />
+            <FieldError errors={[errors.stock]} />
+          </Field>
+          <Field data-invalid={!!errors.scent_family} className="col-span-2 sm:col-span-1">
+            <FieldLabel htmlFor="scent_family">Famille olfactive</FieldLabel>
+            <Input id="scent_family" className="h-11 rounded-lg" {...register("scent_family")} />
+            <FieldError errors={[errors.scent_family]} />
+          </Field>
+          <Field data-invalid={!!errors.concentration} className="col-span-2 sm:col-span-1">
+            <FieldLabel htmlFor="concentration">Concentration</FieldLabel>
+            <Select
+              value={concentration}
+              onValueChange={(v) =>
+                setValue("concentration", v as PerfumeFormValues["concentration"], { shouldValidate: true })
+              }
+            >
+              <SelectTrigger id="concentration" className="h-11 w-full rounded-lg">
+                <SelectValue placeholder="Choisir" />
+              </SelectTrigger>
+              <SelectContent>
+                {CONCENTRATIONS.map((c) => (
+                  <SelectItem key={c} value={c}>
+                    {c}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+            <FieldError errors={[errors.concentration]} />
+          </Field>
+        </div>
+      </FormSection>
 
-      <Field orientation="horizontal" className="items-center gap-3">
-        <Switch checked={isActive} onCheckedChange={(v) => setValue("is_active", v)} id="is_active" />
-        <FieldLabel htmlFor="is_active" className="cursor-pointer">
-          Actif (visible sur le site)
-        </FieldLabel>
-      </Field>
-
-      <Field>
-        <FieldLabel htmlFor="image">Photo</FieldLabel>
-        <div className="flex items-center gap-4">
-          <div className="flex size-24 shrink-0 items-center justify-center overflow-hidden rounded-xl border border-zinc-200 bg-zinc-50">
+      <FormSection title="Photo" description="Compressée et convertie automatiquement au format WebP.">
+        <div className="flex flex-col items-center gap-4 sm:flex-row sm:items-start">
+          <div className="flex size-28 shrink-0 items-center justify-center overflow-hidden rounded-xl border border-zinc-200 bg-zinc-50">
             {previewUrl ? (
               // eslint-disable-next-line @next/next/no-img-element
               <img src={previewUrl} alt="" className="h-full w-full object-cover" />
@@ -250,13 +259,20 @@ export function PerfumeForm({
               <ShoppingBag className="text-zinc-300" size={28} />
             )}
           </div>
-          <div className="flex flex-col gap-2">
-            <Input
+          <div className="flex w-full flex-col items-center gap-2 sm:items-start">
+            <label
+              htmlFor="image"
+              className="inline-flex h-11 w-full cursor-pointer items-center justify-center gap-2 rounded-lg border border-zinc-200 px-4 text-sm font-medium text-zinc-700 transition-colors hover:bg-zinc-50 sm:w-auto"
+            >
+              <Upload size={16} />
+              {previewUrl ? "Changer la photo" : "Choisir une photo"}
+            </label>
+            <input
               id="image"
               type="file"
               accept="image/*"
               onChange={handleImageChange}
-              className="h-11 rounded-lg"
+              className="sr-only"
             />
             {compressing && (
               <p className="flex items-center gap-1.5 text-xs text-zinc-500">
@@ -267,16 +283,30 @@ export function PerfumeForm({
             {!compressing && sizeInfo && <p className="text-xs text-zinc-500">{sizeInfo}</p>}
           </div>
         </div>
-      </Field>
+      </FormSection>
 
-      <div className="flex justify-end gap-3 border-t border-zinc-100 pt-6">
-        <Button type="button" variant="outline" onClick={() => router.push("/admin/parfums")}>
+      <FormSection title="Visibilité" description="Un parfum inactif n'apparaît nulle part sur le site.">
+        <Field orientation="horizontal" className="items-center gap-3">
+          <Switch checked={isActive} onCheckedChange={(v) => setValue("is_active", v)} id="is_active" />
+          <FieldLabel htmlFor="is_active" className="cursor-pointer">
+            {isActive ? "Actif — visible sur le site" : "Inactif — masqué du site"}
+          </FieldLabel>
+        </Field>
+      </FormSection>
+
+      <div className="flex flex-col-reverse gap-3 border-t border-zinc-100 pt-6 sm:flex-row sm:justify-end">
+        <Button
+          type="button"
+          variant="outline"
+          className="w-full sm:w-auto"
+          onClick={() => router.push("/admin/parfums")}
+        >
           Annuler
         </Button>
         <Button
           type="submit"
           disabled={isSubmitting || compressing}
-          className="bg-zinc-900 text-white hover:bg-zinc-800 disabled:opacity-60"
+          className="w-full bg-zinc-900 text-white hover:bg-zinc-800 disabled:opacity-60 sm:w-auto"
         >
           {isSubmitting ? "Enregistrement…" : mode === "create" ? "Créer le parfum" : "Enregistrer"}
         </Button>

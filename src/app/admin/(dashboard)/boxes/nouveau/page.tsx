@@ -20,9 +20,9 @@ export default async function AdminNewBoxPage() {
         <ChevronLeft size={16} />
         Retour aux boxes
       </Link>
-      <h1 className="text-2xl font-semibold text-zinc-900">Nouveau Box</h1>
+      <h1 className="text-xl font-semibold text-zinc-900 sm:text-2xl">Nouvelle box</h1>
 
-      <div className="mt-6 max-w-3xl rounded-2xl border border-zinc-200 bg-white p-6">
+      <div className="mt-6 max-w-3xl">
         <BoxForm mode="create" perfumes={data ?? []} />
       </div>
     </div>

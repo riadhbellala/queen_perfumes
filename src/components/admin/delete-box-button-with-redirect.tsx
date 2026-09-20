@@ -29,7 +29,7 @@ export function DeleteBoxButtonWithRedirect({
         <Button
           type="button"
           variant="outline"
-          className="gap-2 text-red-600 hover:bg-red-50 hover:text-red-700"
+          className="w-full gap-2 text-red-600 hover:bg-red-50 hover:text-red-700 sm:w-auto"
         >
           <Trash2 size={16} data-icon="inline-start" />
           Supprimer cette box
